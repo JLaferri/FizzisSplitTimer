@@ -110,12 +110,11 @@ namespace Fizzi.Applications.Splitter.ViewModel
             {
                 if (CurrentRun == null) return Observable.Never<Unit>();
 
-                var startObs = Observable.FromEventPattern(h => CurrentRun.RunStarted += h, h => CurrentRun.RunStarted -= h).Select(_2 => Unit.Default);
-                var completeObs = Observable.FromEventPattern(h => CurrentRun.RunCompleted += h, h => CurrentRun.RunCompleted -= h).Select(_2 => Unit.Default);
+                var startObs = Observable.FromEventPattern(h => CurrentRun.RunStatusChanged += h, h => CurrentRun.RunStatusChanged -= h).Select(_2 => Unit.Default);
 
                 //Propagate the start and complete events but also fire an event immediately which will be used
                 //to reset the timer as soon as the run changes
-                return startObs.Merge(completeObs).StartWith(Unit.Default);
+                return startObs.StartWith(Unit.Default);
             });
 
             //Set up an observable of an observable which will be used to monitor changes in splits

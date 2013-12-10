@@ -152,7 +152,7 @@
                                             <Condition Binding="{Binding IsNewGoldSplit}" Value="False" />
                                             <Condition Binding="{Binding IsAheadOfPb}" Value="True" />
                                         </MultiDataTrigger.Conditions>
-                                        <Setter Property="BorderBrush" Value="LightGreen" />
+                                        <Setter Property="BorderBrush" Value="LimeGreen" />
                                     </MultiDataTrigger>
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
@@ -182,7 +182,18 @@
         </ItemsControl>
             
         <TextBlock Grid.Row="2" Margin="6" TextAlignment="Right" VerticalAlignment="Center" Foreground="White"
-                   Text="{Binding LiveTimer.DisplayTimer}" FontSize="40" FontFamily="Liquid Crystal" />
+                   FontSize="40" FontFamily="Liquid Crystal">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Text" Value="{Binding LiveTimer.OverrideTimeDisplay}" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding LiveTimer.OverrideTimeDisplay}" Value="{x:Null}">
+                            <Setter Property="Text" Value="{Binding LiveTimer.DisplayTimer}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
         
         <Grid Grid.Row="3" Margin="3,6">
             <Grid.ColumnDefinitions>
@@ -201,7 +212,7 @@
                            Text="{Binding PreviousSplitRow.GoldOffsetDisplay}" FontSize="14" FontFamily="PF Arma Five" />
             </Border>
 
-            <Border Grid.Column="2" Margin="3,0,3,0" Background="{StaticResource BackgroundBrush}" BorderBrush="White" BorderThickness="1" SnapsToDevicePixels="True">
+            <Border Grid.Column="2" Margin="3,0,3,0" Visibility="Collapsed" Background="{StaticResource BackgroundBrush}" BorderBrush="White" BorderThickness="1" SnapsToDevicePixels="True">
                 <TextBlock Margin="3,1" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center"
                            Text="{Binding CurrentFile.PersonalBestDate, FallbackValue=N/A, StringFormat={}{0:d}}" FontSize="14" FontFamily="PF Arma Five" />
             </Border>

@@ -13,7 +13,12 @@ namespace Fizzi.Applications.Splitter.Model
         private string _displayTimer;
         public string DisplayTimer { get { return _displayTimer; } set { this.RaiseAndSetIfChanged("DisplayTimer", ref _displayTimer, value, PropertyChanged); } }
 
+        private string _overrideTimeDisplay;
+        public string OverrideTimeDisplay { get { return _overrideTimeDisplay; } set { this.RaiseAndSetIfChanged("OverrideTimeDisplay", ref _overrideTimeDisplay, value, PropertyChanged); } }
+
         public TimeSpan Time { get; private set; }
+        public TimeSpan OverrideTime { get; private set; }
+
         public DateTime LatestReferenceTime { get; private set; }
 
         private IObservable<long> frequencyObservable;
@@ -27,13 +32,14 @@ namespace Fizzi.Applications.Splitter.Model
         public void Clear()
         {
             if (subscription != null) subscription.Dispose();
+            clearOverrideTimer();
             setTimer(TimeSpan.Zero);
         }
 
         public void Stop(TimeSpan stopTime)
         {
             if (subscription != null) subscription.Dispose();
-            setTimer(stopTime);
+            setOverrideTimer(stopTime);
         }
 
         public void Start(DateTime referenceTime)
@@ -41,6 +47,7 @@ namespace Fizzi.Applications.Splitter.Model
             LatestReferenceTime = referenceTime;
 
             if (subscription != null) subscription.Dispose();
+            clearOverrideTimer();
             subscription = frequencyObservable.Subscribe(_ => setTimer(DateTime.Now.Subtract(LatestReferenceTime)));
         }
 
@@ -48,6 +55,18 @@ namespace Fizzi.Applications.Splitter.Model
         {
             Time = time;
             DisplayTimer = FormatElapsedTimeSpan(time);
+        }
+
+        private void setOverrideTimer(TimeSpan time)
+        {
+            OverrideTime = time;
+            OverrideTimeDisplay = FormatElapsedTimeSpan(time);
+        }
+
+        private void clearOverrideTimer()
+        {
+            OverrideTime = TimeSpan.Zero;
+            OverrideTimeDisplay = null;
         }
 
         public static string FormatElapsedTimeSpan(TimeSpan time)

@@ -8,8 +8,7 @@ namespace Fizzi.Applications.Splitter.Model
 {
     class Run
     {
-        public event EventHandler RunStarted;
-        public event EventHandler RunCompleted;
+        public event EventHandler RunStatusChanged;
         public event EventHandler<SplitChange> SplitChanged;
 
         public int CurrentSplit { get; private set; }
@@ -46,7 +45,7 @@ namespace Fizzi.Applications.Splitter.Model
                 //If run has not yet started - start it now
                 StartTime = DateTime.Now;
                 IsStarted = true;
-                OnRunStarted();
+                OnRunStatusChanged();
             }
             else if (!IsCompleted)
             {
@@ -61,7 +60,7 @@ namespace Fizzi.Applications.Splitter.Model
                 CurrentSplit++;
 
                 OnSplitChanged(new SplitChange(SplitChange.ActionEnum.Added, split, CurrentSplit - 1));
-                if (IsCompleted) OnRunCompleted();
+                if (IsCompleted) OnRunStatusChanged();
             }
         }
 
@@ -82,7 +81,7 @@ namespace Fizzi.Applications.Splitter.Model
                 CurrentSplit++;
 
                 OnSplitChanged(new SplitChange(SplitChange.ActionEnum.Added, split, CurrentSplit - 1));
-                if (IsCompleted) OnRunCompleted();
+                if (IsCompleted) OnRunStatusChanged();
             }
         }
 
@@ -91,25 +90,23 @@ namespace Fizzi.Applications.Splitter.Model
             //An unsplit request will not work if the run is complete
             //An unsplit request will do nothing if the current split is the first split
 
-            if (!IsCompleted && CurrentSplit > 0)
+            if (CurrentSplit > 0)
             {
+                var wasRunPreviouslyComplete = IsCompleted;
+
                 CurrentSplit--;
 
                 var split = Splits[CurrentSplit];
                 Splits[CurrentSplit] = null;
 
                 OnSplitChanged(new SplitChange(SplitChange.ActionEnum.Removed, split, CurrentSplit));
+                if (wasRunPreviouslyComplete) OnRunStatusChanged();
             }
         }
 
-        protected virtual void OnRunStarted()
+        protected virtual void OnRunStatusChanged()
         {
-            if (RunStarted != null) RunStarted(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnRunCompleted()
-        {
-            if (RunCompleted != null) RunCompleted(this, EventArgs.Empty);
+            if (RunStatusChanged != null) RunStatusChanged(this, EventArgs.Empty);
         }
 
         protected virtual void OnSplitChanged(SplitChange change)
