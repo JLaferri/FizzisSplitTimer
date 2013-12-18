@@ -35,8 +35,8 @@ namespace Fizzi.Applications.Splitter.View
                     var tempMinHeight = MinHeight;
                     var tempMaxHeight = MaxHeight;
 
-                    MinHeight = mvm.CurrentFile.Height;
-                    MaxHeight = mvm.CurrentFile.Height;
+                    MinHeight = mvm.CurrentFile.DisplaySettings.WindowHeight;
+                    MaxHeight = mvm.CurrentFile.DisplaySettings.WindowHeight;
 
                     MinHeight = tempMinHeight;
                     MaxHeight = tempMaxHeight;
@@ -44,13 +44,35 @@ namespace Fizzi.Applications.Splitter.View
                     var tempMinWidth = MinWidth;
                     var tempMaxWidth = MaxWidth;
 
-                    MinWidth = mvm.CurrentFile.Width;
-                    MaxWidth = mvm.CurrentFile.Width;
+                    MinWidth = mvm.CurrentFile.DisplaySettings.WindowWidth;
+                    MaxWidth = mvm.CurrentFile.DisplaySettings.WindowWidth;
 
                     MinWidth = tempMinWidth;
                     MaxWidth = tempMaxWidth;
                 }
             };
+
+            this.Closing += (sender, e) =>
+            {
+                mvm.CheckMergeSuggested();      
+            };
+        }
+
+        private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var mvm = (ViewModel.MainViewModel)DataContext;
+
+            mvm.SettingsWindowOpen = true;
+
+            var window = new SettingsWindow()
+            {
+                DataContext = mvm,
+                Owner = this
+            };
+
+            window.ShowDialog();
+
+            mvm.SettingsWindowOpen = false;
         }
 
         private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
@@ -62,6 +84,5 @@ namespace Fizzi.Applications.Splitter.View
         {
             if (e.ChangedButton == MouseButton.Left) this.DragMove();
         }
-
     }
 }

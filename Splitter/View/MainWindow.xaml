@@ -3,11 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:lview="clr-namespace:Fizzi.Applications.Splitter.View"
         xmlns:lvm="clr-namespace:Fizzi.Applications.Splitter.ViewModel"
+        xmlns:p="clr-namespace:Fizzi.Applications.Splitter.Properties"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         x:Name="MainWindowName"
-        WindowStyle="None" AllowsTransparency="True"
-        Height="{Binding CurrentFile.Height, Mode=TwoWay, FallbackValue=400}"
-        Width="{Binding CurrentFile.Width, Mode=TwoWay, FallbackValue=250}"
+        WindowStyle="None" AllowsTransparency="{Binding Source={x:Static p:Settings.Default}, Path=AllowsTransparency, Mode=OneTime}"
+        Height="{Binding CurrentFile.UserSettings.WindowHeight, Mode=TwoWay, FallbackValue=400}"
+        Width="{Binding CurrentFile.UserSettings.WindowWidth, Mode=TwoWay, FallbackValue=250}"
         MouseDown="Window_MouseDown" Title="Fizzi's Split Timer">
     <Window.DataContext>
         <lvm:MainViewModel />
@@ -37,6 +38,8 @@
 
         <SolidColorBrush x:Key="BackgroundBrush" Color="#303030" />
         <!--<SolidColorBrush x:Key="BackgroundBrush" Color="Gold" />-->
+        
+        <BooleanToVisibilityConverter x:Key="BoolToVisConv" />
     </Window.Resources>
     <Grid Background="Black">
         <Grid.ContextMenu>
@@ -49,7 +52,9 @@
                 <MenuItem Header="Save" Command="{Binding SaveSplits}" Style="{StaticResource DisabledWhenNoFile}" />
                 <MenuItem Header="Save As..." Command="{Binding SaveSplitsAs}" Style="{StaticResource DisabledWhenNoFile}" />
                 <Separator />
-                <MenuItem Header="Resize" IsCheckable="True" IsChecked="{Binding ResizeEnabled}" />
+                <MenuItem Header="Resize" IsCheckable="True" IsChecked="{Binding ResizeEnabled}" Visibility="{Binding Source={x:Static p:Settings.Default}, Path=AllowsTransparency, Mode=OneTime, Converter={StaticResource BoolToVisConv}}" />
+                <Separator Visibility="{Binding Source={x:Static p:Settings.Default}, Path=AllowsTransparency, Mode=OneTime, Converter={StaticResource BoolToVisConv}}" />
+                <MenuItem Header="Settings..." Click="SettingsMenuItem_Click" />
                 <Separator />
                 <MenuItem Header="Exit" Click="ExitMenuItem_Click" />
             </ContextMenu>
@@ -61,16 +66,6 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!--<StackPanel Grid.Row="0">
-            <TextBlock Foreground="White" Text="With DropShadow" FontSize="36">
-                <TextBlock.Effect>
-                    <DropShadowEffect ShadowDepth="0" BlurRadius="1" Color="Red" />
-                </TextBlock.Effect>
-            </TextBlock>
-
-            <TextBlock Foreground="White" Text="No DropShadow" FontSize="36" />
-        </StackPanel>-->
-
         <!--RenderOptions.ClearTypeHint="Enabled" TextOptions.TextFormattingMode="Display" RenderOptions.BitmapScalingMode="NearestNeighbor"-->
         
         <Border Grid.Row="0" Margin="6,6,6,5" Background="{StaticResource BackgroundBrush}" BorderBrush="White" BorderThickness="1" SnapsToDevicePixels="True">
@@ -81,11 +76,11 @@
                            Text="{Binding CurrentFile.PersonalBestDate, FallbackValue=N/A}" FontSize="14" FontFamily="PF Arma Five" />-->
             </StackPanel>
         </Border>
-
-        <!--<ListView Grid.Row="1" ItemsSource="{Binding SplitRows}" Scr>
-            <ListView.ItemTemplate>
+        
+        <lview:SplitViewer Grid.Row="1" Splits="{Binding SplitRows}" CurrentSplit="{Binding CurrentSplitRow}" IsHitTestVisible="False">
+            <lview:SplitViewer.SplitTemplate>
                 <DataTemplate>
-                    <Border Margin="6,1" Background="{StaticResource BackgroundBrush}" BorderThickness="1" SnapsToDevicePixels="True">
+                    <Border  Margin="6,1" Background="{StaticResource BackgroundBrush}" BorderThickness="1" SnapsToDevicePixels="True">
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="BorderBrush" Value="White" />
@@ -98,7 +93,7 @@
                                             <Condition Binding="{Binding IsNewGoldSplit}" Value="False" />
                                             <Condition Binding="{Binding IsAheadOfPb}" Value="True" />
                                         </MultiDataTrigger.Conditions>
-                                        <Setter Property="BorderBrush" Value="LightGreen" />
+                                        <Setter Property="BorderBrush" Value="LimeGreen" />
                                     </MultiDataTrigger>
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
@@ -124,9 +119,23 @@
                         </Grid>
                     </Border>
                 </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>-->
-        <ItemsControl Grid.Row="1" ItemsSource="{Binding SplitRows}">
+            </lview:SplitViewer.SplitTemplate>
+            
+            <lview:SplitViewer.SeparatorContent>
+                <!--<Rectangle Height="5" Margin="6,1">
+                    <Rectangle.Fill>
+                        <VisualBrush Stretch="Uniform" Viewport="0,0,7,5" ViewportUnits="Absolute" TileMode="Tile">
+                            <VisualBrush.Visual>
+                                <Polygon Points="1,0 5,0 3,4" Fill="White" />
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Rectangle.Fill>
+                </Rectangle>-->
+                <Border Margin="6,1" Height="3" Background="White" SnapsToDevicePixels="True" />
+            </lview:SplitViewer.SeparatorContent>
+        </lview:SplitViewer>
+        
+        <!--<ItemsControl Grid.Row="1" ItemsSource="{Binding SplitRows}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <DockPanel LastChildFill="False"/>
@@ -179,7 +188,7 @@
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        </ItemsControl>-->
             
         <TextBlock Grid.Row="2" Margin="6" TextAlignment="Right" VerticalAlignment="Center" Foreground="White"
                    FontSize="40" FontFamily="Liquid Crystal">

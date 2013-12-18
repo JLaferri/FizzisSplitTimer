@@ -26,13 +26,9 @@ namespace Fizzi.Applications.Splitter.Model
         private SplitInfo[] _runDefinition;
         public SplitInfo[] RunDefinition { get { return _runDefinition; } private set { this.RaiseAndSetIfChanged("RunDefinition", ref _runDefinition, value, PropertyChanged); } }
 
-        [DataMember(Name = "Width")]
-        private double _width;
-        public double Width { get { return _width; } set { this.RaiseAndSetIfChanged("Width", ref _width, value, PropertyChanged); } }
-
-        [DataMember(Name = "Height")]
-        private double _height;
-        public double Height { get { return _height; } set { this.RaiseAndSetIfChanged("Height", ref _height, value, PropertyChanged); } }
+        [DataMember(Name = "DisplaySettings")]
+        private DisplaySettings _displaySettings;
+        public DisplaySettings DisplaySettings { get { return _displaySettings; } private set { this.RaiseAndSetIfChanged("DisplaySettings", ref _displaySettings, value, PropertyChanged); } }
 
         private Run _personalBest;
         public Run PersonalBest { get { return _personalBest; } private set { this.RaiseAndSetIfChanged("PersonalBest", ref _personalBest, value, PropertyChanged); } }
@@ -50,8 +46,7 @@ namespace Fizzi.Applications.Splitter.Model
             Header = header;
             RunDefinition = runDefinition;
 
-            Height = 400;
-            Width = 250;
+            DisplaySettings = new Model.DisplaySettings();
 
             generateRunsFromDefinition();
         }
@@ -147,6 +142,8 @@ namespace Fizzi.Applications.Splitter.Model
             //Set path to be what we loaded
             file.Path = path;
 
+            if (file.DisplaySettings == null) file.DisplaySettings = new DisplaySettings();
+
             return file;
         }
 
@@ -190,8 +187,8 @@ namespace Fizzi.Applications.Splitter.Model
 
             var result = new SplitFile(runName, splits);
 
-            result.Height = height;
-            result.Width = width;
+            result.DisplaySettings.WindowHeight = height;
+            result.DisplaySettings.WindowWidth = width;
 
             return result;
         }

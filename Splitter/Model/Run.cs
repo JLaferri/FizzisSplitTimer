@@ -15,8 +15,10 @@ namespace Fizzi.Applications.Splitter.Model
         public Split[] Splits { get; private set; }
 
         public bool IsStarted { get; private set; }
+        public bool IsPaused { get { return PauseTime != null; } }
         public bool IsCompleted { get { return CurrentSplit >= Splits.Length; } }
 
+        public DateTime? PauseTime { get; private set; }
         public DateTime StartTime { get; private set; }
 
         public Run(int splitCount)

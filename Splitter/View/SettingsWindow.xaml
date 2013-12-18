@@ -1,0 +1,100 @@
+﻿<Window x:Class="Fizzi.Applications.Splitter.View.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lvm="clr-namespace:Fizzi.Applications.Splitter.ViewModel"
+        xmlns:p="clr-namespace:Fizzi.Applications.Splitter.Properties"
+        Title="Fizzi's Split Timer Settings" Height="300" Width="500"
+        WindowStyle="ToolWindow">
+    <Grid>
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding SettingsViewModel.IsPendingHotkeyChange}" Value="true">
+                        <Setter Property="IsEnabled" Value="false" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <TabControl Grid.Row="0">
+            <TabItem Header="Global">
+                <StackPanel>
+                    <GroupBox Margin="3" Header="Hotkeys">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="60" />
+                                <ColumnDefinition Width="60" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBlock Grid.Column="0" Grid.Row="0" Margin="3" VerticalAlignment="Center" Text="Split/Start" />
+                            <TextBlock Grid.Column="0" Grid.Row="1" Margin="3" VerticalAlignment="Center" Text="Unsplit" />
+                            <TextBlock Grid.Column="0" Grid.Row="2" Margin="3" VerticalAlignment="Center" Text="Skip Split" />
+                            <TextBlock Grid.Column="0" Grid.Row="3" Margin="3" VerticalAlignment="Center" Text="Reset" />
+                            
+                            <Border Grid.Column="1" Grid.Row="0" Margin="3" BorderBrush="Black" BorderThickness="1" SnapsToDevicePixels="True" Background="White">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Text="{Binding Path=SettingsViewModel.KeyDisplayStrings[(lvm:HotkeyAction)Split].Value}" />
+                            </Border>
+                            <Border Grid.Column="1" Grid.Row="1" Margin="3" BorderBrush="Black" BorderThickness="1" SnapsToDevicePixels="True" Background="White">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Text="{Binding Path=SettingsViewModel.KeyDisplayStrings[(lvm:HotkeyAction)Unsplit].Value}" />
+                            </Border>
+                            <Border Grid.Column="1" Grid.Row="2" Margin="3" BorderBrush="Black" BorderThickness="1" SnapsToDevicePixels="True" Background="White">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Text="{Binding Path=SettingsViewModel.KeyDisplayStrings[(lvm:HotkeyAction)Skip].Value}" />
+                            </Border>
+                            <Border Grid.Column="1" Grid.Row="3" Margin="3" BorderBrush="Black" BorderThickness="1" SnapsToDevicePixels="True" Background="White">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Text="{Binding Path=SettingsViewModel.KeyDisplayStrings[(lvm:HotkeyAction)Reset].Value}" />
+                            </Border>
+
+                            <Button Grid.Column="2" Grid.Row="0" Margin="3" Content="Set"
+                                    Command="{Binding SettingsViewModel.ChangeHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Split}" />
+                            <Button Grid.Column="2" Grid.Row="1" Margin="3" Content="Set"
+                                    Command="{Binding SettingsViewModel.ChangeHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Unsplit}" />
+                            <Button Grid.Column="2" Grid.Row="2" Margin="3" Content="Set"
+                                    Command="{Binding SettingsViewModel.ChangeHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Skip}" />
+                            <Button Grid.Column="2" Grid.Row="3" Margin="3" Content="Set"
+                                    Command="{Binding SettingsViewModel.ChangeHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Reset}" />
+
+                            <Button Grid.Column="3" Grid.Row="0" Margin="3" Content="Clear"
+                                    Command="{Binding SettingsViewModel.ClearHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Split}" />
+                            <Button Grid.Column="3" Grid.Row="1" Margin="3" Content="Clear"
+                                    Command="{Binding SettingsViewModel.ClearHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Unsplit}" />
+                            <Button Grid.Column="3" Grid.Row="2" Margin="3" Content="Clear"
+                                    Command="{Binding SettingsViewModel.ClearHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Skip}" />
+                            <Button Grid.Column="3" Grid.Row="3" Margin="3" Content="Clear"
+                                    Command="{Binding SettingsViewModel.ClearHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Reset}" />
+                        </Grid>
+                    </GroupBox>
+                    
+                    <GroupBox Margin="3" Header="Application">
+                        <StackPanel>
+                            <CheckBox Margin="3" IsChecked="{Binding Source={x:Static p:Settings.Default}, Path=AllowsTransparency}"
+                                  Content="Show Manual Window Resize Option (Requires Restart)" />
+                            <TextBlock Margin="3" Text="Note: In order to display the application in OBS using Window Capture (Aero Mode, No Overlapped), this option must be disabled. Similar behaviour may be found using other streaming applications." />
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+        
+        <DockPanel Grid.Row="1">
+            <Button Margin="3" DockPanel.Dock="Left" Content="Save" Width="100" Click="SaveButton_Click" />
+            <Button Margin="3" DockPanel.Dock="Right" HorizontalAlignment="Right" Content="Cancel" Width="100" Click="CancelButton_Click" />
+        </DockPanel>
+    </Grid>
+</Window>

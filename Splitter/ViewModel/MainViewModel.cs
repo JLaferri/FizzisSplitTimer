@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Reactive.Linq;
 using System.Reactive;
 using System.Windows;
+using Fizzi.Applications.Splitter.Properties;
 
 namespace Fizzi.Applications.Splitter.ViewModel
 {
@@ -29,6 +30,9 @@ namespace Fizzi.Applications.Splitter.ViewModel
         private SplitRowDisplay _previousSplitRow;
         public SplitRowDisplay PreviousSplitRow { get { return _previousSplitRow; } set { this.RaiseAndSetIfChanged("PreviousSplitRow", ref _previousSplitRow, value, PropertyChanged); } }
 
+        private SplitRowDisplay _currentSplitRow;
+        public SplitRowDisplay CurrentSplitRow { get { return _currentSplitRow; } set { this.RaiseAndSetIfChanged("CurrentSplitRow", ref _currentSplitRow, value, PropertyChanged); } }
+
         public Timer LiveTimer { get; private set; }
 
         public ICommand SaveSplits { get; private set; }
@@ -39,10 +43,33 @@ namespace Fizzi.Applications.Splitter.ViewModel
         private bool _resizeEnabled;
         public bool ResizeEnabled { get { return _resizeEnabled; } set { this.RaiseAndSetIfChanged("ResizeEnabled", ref _resizeEnabled, value, PropertyChanged); } }
 
+        public bool SettingsWindowOpen { get; set; }
+
+        public SettingsViewModel SettingsViewModel { get; set; }
+
         private KeyboardListener keyListener = new KeyboardListener();
 
         public MainViewModel()
         {
+            if (Settings.Default.IsNewVersion)
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.IsNewVersion = false;
+                Settings.Default.Save();
+            }
+
+            if (Settings.Default.IsVeryFirstLoad)
+            {
+                //Load Key defaults on first load ever
+                Settings.Default.SplitKey = Key.Right;
+                Settings.Default.UnsplitKey = Key.Left;
+                Settings.Default.SkipKey = Key.PageDown;
+                Settings.Default.ResetKey = Key.End;
+                Settings.Default.PauseKey = Key.Pause;
+                Settings.Default.IsVeryFirstLoad = false;
+                Settings.Default.Save();
+            }
+
             //var splitList = new List<SplitInfo>();
             //splitList.Add(new SplitInfo() { Name = "Cure 1", PersonalBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(106)), SumOfBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(103.61)) });
             //splitList.Add(new SplitInfo() { Name = "Cure 2", PersonalBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(206.03 - 106)), SumOfBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(94.11)) });
@@ -57,36 +84,23 @@ namespace Fizzi.Applications.Splitter.ViewModel
             //splitFile.Save();
 
             LiveTimer = new Timer(30);
+            SettingsViewModel = new SettingsViewModel(keyListener);
+
             ResizeEnabled = false;
 
             //Subscribe to keyboard events
             keyListener.KeyDown += (sender, e) =>
             {
-                switch (e.Key)
+                if (!SettingsWindowOpen && CurrentFile != null && CurrentRun != null)
                 {
-                    case Key.Right:
-                        if (CurrentRun != null) CurrentRun.Split();
-                        break;
-                    case Key.Left:
-                        if (CurrentRun != null) CurrentRun.Unsplit();
-                        break;
-                    case Key.PageDown:
-                        if (CurrentRun != null) CurrentRun.SkipSplit();
-                        break;
-                    case Key.End:
-                        if (CurrentFile != null)
-                        {
-                            if (CurrentFile.CheckMergeSuggested(CurrentRun))
-                            {
-                                var result = MessageBox.Show("We have detected that your current run has unsaved gold splits or a new personal best. Would you like to save?",
-                                    "Save Records?", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-                                if (result == MessageBoxResult.Yes) SaveCurrentFile();
-                            }
-
-                            CurrentRun = new Run(CurrentFile.RunDefinition.Length);
-                        }
-                        break;
+                    if (e.Key == Settings.Default.SplitKey) CurrentRun.Split();
+                    if (e.Key == Settings.Default.UnsplitKey) CurrentRun.Unsplit();
+                    if (e.Key == Settings.Default.SkipKey) CurrentRun.SkipSplit();
+                    if (e.Key == Settings.Default.ResetKey)
+                    {
+                        CheckMergeSuggested();
+                        CurrentRun = new Run(CurrentFile.RunDefinition.Length);
+                    }
                 }
             };
 
@@ -144,10 +158,12 @@ namespace Fizzi.Applications.Splitter.ViewModel
                     case SplitChange.ActionEnum.Removed:
                         SplitRows[args.EventArgs.Index].CurrentRunSplit = null;
                         PreviousSplitRow = args.EventArgs.Index > 0 ? SplitRows[args.EventArgs.Index - 1] : null;
+                        CurrentSplitRow = SplitRows[args.EventArgs.Index];
                         break;
                     case SplitChange.ActionEnum.Added:
                         SplitRows[args.EventArgs.Index].CurrentRunSplit = args.EventArgs.Item;
                         PreviousSplitRow = SplitRows[args.EventArgs.Index];
+                        CurrentSplitRow = SplitRows.Length > args.EventArgs.Index + 1 ? SplitRows[args.EventArgs.Index + 1] : SplitRows[args.EventArgs.Index];
                         break;
                     case SplitChange.ActionEnum.Reset:
                         var pbSplits = CurrentFile.PersonalBest.Splits;
@@ -158,6 +174,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
 
                         SplitRows = merged.Select(a => new SplitRowDisplay(a.Info.Name, a.PbSplit, a.GoldSplit)).ToArray();
                         PreviousSplitRow = null;
+                        CurrentSplitRow = null;
                         break;
                 }
             });
@@ -230,6 +247,17 @@ namespace Fizzi.Applications.Splitter.ViewModel
             {
                 CurrentFile.Path = ofd.FileName;
                 SaveCurrentFile();
+            }
+        }
+
+        public void CheckMergeSuggested()
+        {
+            if (CurrentFile != null && CurrentRun != null && CurrentFile.CheckMergeSuggested(CurrentRun))
+            {
+                var result = MessageBox.Show("We have detected that your current run has unsaved gold splits or a new personal best. Would you like to save?",
+                    "Save Records?", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes) SaveCurrentFile();
             }
         }
 

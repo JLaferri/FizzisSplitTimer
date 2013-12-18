@@ -22,5 +22,96 @@ namespace Fizzi.Applications.Splitter.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Nullable<System.Windows.Input.Key> SplitKey {
+            get {
+                return ((global::System.Nullable<System.Windows.Input.Key>)(this["SplitKey"]));
+            }
+            set {
+                this["SplitKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Nullable<System.Windows.Input.Key> UnsplitKey {
+            get {
+                return ((global::System.Nullable<System.Windows.Input.Key>)(this["UnsplitKey"]));
+            }
+            set {
+                this["UnsplitKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Nullable<System.Windows.Input.Key> SkipKey {
+            get {
+                return ((global::System.Nullable<System.Windows.Input.Key>)(this["SkipKey"]));
+            }
+            set {
+                this["SkipKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Nullable<System.Windows.Input.Key> ResetKey {
+            get {
+                return ((global::System.Nullable<System.Windows.Input.Key>)(this["ResetKey"]));
+            }
+            set {
+                this["ResetKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Nullable<System.Windows.Input.Key> PauseKey {
+            get {
+                return ((global::System.Nullable<System.Windows.Input.Key>)(this["PauseKey"]));
+            }
+            set {
+                this["PauseKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsNewVersion {
+            get {
+                return ((bool)(this["IsNewVersion"]));
+            }
+            set {
+                this["IsNewVersion"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsVeryFirstLoad {
+            get {
+                return ((bool)(this["IsVeryFirstLoad"]));
+            }
+            set {
+                this["IsVeryFirstLoad"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AllowsTransparency {
+            get {
+                return ((bool)(this["AllowsTransparency"]));
+            }
+            set {
+                this["AllowsTransparency"] = value;
+            }
+        }
     }
 }
