@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:lvm="clr-namespace:Fizzi.Applications.Splitter.ViewModel"
         xmlns:p="clr-namespace:Fizzi.Applications.Splitter.Properties"
-        Title="Fizzi's Split Timer Settings" Height="300" Width="500"
-        WindowStyle="ToolWindow">
+        Title="Fizzi's Split Timer Settings" Width="500"
+        WindowStyle="ToolWindow" SizeToContent="Height">
     <Grid>
         <Grid.Style>
             <Style TargetType="Grid">
@@ -85,7 +85,8 @@
                         <StackPanel>
                             <CheckBox Margin="3" IsChecked="{Binding Source={x:Static p:Settings.Default}, Path=AllowsTransparency}"
                                   Content="Show Manual Window Resize Option (Requires Restart)" />
-                            <TextBlock Margin="3" Text="Note: In order to display the application in OBS using Window Capture (Aero Mode, No Overlapped), this option must be disabled. Similar behaviour may be found using other streaming applications." />
+                            <TextBlock Margin="3" Text="Note: In order to display the application in OBS using Window Capture (Aero Mode, No Overlapped), this option must be disabled. Similar behaviour may be found using other streaming applications."
+                                       TextWrapping="Wrap" />
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
