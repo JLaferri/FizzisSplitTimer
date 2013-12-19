@@ -48,6 +48,8 @@ namespace Fizzi.Applications.Splitter.ViewModel
         public SettingsViewModel SettingsViewModel { get; private set; }
         public DisplaySettingsViewModel DisplaySettingsViewModel { get; private set; }
 
+        public View.MainWindow MainWindow { get; set; }
+
         private KeyboardListener keyListener = new KeyboardListener();
 
         public MainViewModel()
@@ -201,7 +203,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
                 Title = "Select Split File"
             };
 
-            var result = ofd.ShowDialog();
+            var result = ofd.ShowDialog(MainWindow);
             if (result.HasValue && result.Value)
             {
                 try
@@ -224,7 +226,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
                 Title = "Select Split File"
             };
 
-            var result = ofd.ShowDialog();
+            var result = ofd.ShowDialog(MainWindow);
             if (result.HasValue && result.Value)
             {
                 CurrentFile = SplitFile.Load(ofd.FileName);
@@ -248,7 +250,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
                 Title = "Choose Save Location"
             };
 
-            var result = ofd.ShowDialog();
+            var result = ofd.ShowDialog(MainWindow);
             if (result.HasValue && result.Value)
             {
                 CurrentFile.Path = ofd.FileName;

@@ -19,7 +19,10 @@ namespace Fizzi.Applications.Splitter
             //Create and show window while storing datacontext
             this.Startup += (sender, args) =>
             {
-                MainWindow = new View.MainWindow();
+                var mainWindow = new View.MainWindow();
+                MainWindow = mainWindow;
+
+                ((ViewModel.MainViewModel)MainWindow.DataContext).MainWindow = mainWindow;
                 disposableViewModel = MainWindow.DataContext as IDisposable;
 
                 MainWindow.Show();
