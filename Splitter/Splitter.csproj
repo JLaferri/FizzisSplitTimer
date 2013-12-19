@@ -108,8 +108,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\DisplaySettingsViewModel.cs" />
     <Compile Include="ViewModel\HotkeyAction.cs" />
     <Compile Include="ViewModel\SettingsViewModel.cs" />
+    <Compile Include="View\DisplaySettingsWindow.xaml.cs">
+      <DependentUpon>DisplaySettingsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ObjectEqualityConverter.cs" />
     <Compile Include="View\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
@@ -117,6 +122,10 @@
     <Compile Include="View\SplitViewer.xaml.cs">
       <DependentUpon>SplitViewer.xaml</DependentUpon>
     </Compile>
+    <Page Include="View\DisplaySettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -171,6 +180,12 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FontDialog\FontDialog.csproj">
+      <Project>{889D6549-F143-46B8-8894-504F017467D7}</Project>
+      <Name>FontDialog</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

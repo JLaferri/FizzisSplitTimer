@@ -22,5 +22,27 @@ namespace Fizzi.Applications.Splitter.Model
             Time = time;
             IsPrecise = isPrecise;
         }
+
+        public static bool operator !=(SplitTimeSpan x, SplitTimeSpan y)
+        {
+            return !(x == y);
+        }
+
+        public static bool operator ==(SplitTimeSpan x, SplitTimeSpan y)
+        {
+            return x.IsPrecise == y.IsPrecise && x.Time == y.Time;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is SplitTimeSpan)) return base.Equals(obj);
+
+            return this == (SplitTimeSpan)obj;
+        }
+
+        public override int GetHashCode()
+        {
+            return IsPrecise.GetHashCode() ^ Time.GetHashCode();
+        }
     }
 }

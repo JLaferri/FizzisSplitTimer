@@ -155,9 +155,9 @@ namespace Fizzi.Applications.Splitter.Model
             var linesOfText = File.ReadAllLines(path);
             var runName = firstLine.Replace("Title=", string.Empty);
 
-            var heightWidth = linesOfText[3].Replace("Size=", string.Empty).Split(',');
-            var height = double.Parse(heightWidth[0]);
-            var width = double.Parse(heightWidth[1]);
+            //var heightWidth = linesOfText[3].Replace("Size=", string.Empty).Split(',');
+            //var height = double.Parse(heightWidth[0]);
+            //var width = double.Parse(heightWidth[1]);
 
             var decodedStrings = linesOfText.Skip(4).Take(linesOfText.Length - 5).Select(s =>
             {
@@ -175,20 +175,28 @@ namespace Fizzi.Applications.Splitter.Model
             {
                 var split = decodedStrings[i];
 
-                var pbSplit = i == 0 ? split.PbTime : split.PbTime.Subtract(decodedStrings[i - 1].PbTime);
+                SplitTimeSpan pbSplit;
+                    
+                if (split.PbTime == TimeSpan.Zero)
+                {
+                    var lastKnownTime = decodedStrings.Take(i).Where(a => a.PbTime != TimeSpan.Zero).Select(a => a.PbTime).FirstOrDefault();
+                    pbSplit = new SplitTimeSpan(lastKnownTime, false);
+                }
+                else if (i == 0) pbSplit = new SplitTimeSpan(split.PbTime);
+                else pbSplit = new SplitTimeSpan(split.PbTime.Subtract(decodedStrings[i - 1].PbTime));
 
                 return new SplitInfo()
                 {
                     Name = split.Name,
-                    PersonalBestSplit = new SplitTimeSpan(pbSplit),
-                    SumOfBestSplit = new SplitTimeSpan(split.Gold)
+                    PersonalBestSplit = pbSplit,
+                    SumOfBestSplit = split.Gold == TimeSpan.Zero ? SplitTimeSpan.Unknown : new SplitTimeSpan(split.Gold)
                 };
             }).ToArray();
 
             var result = new SplitFile(runName, splits);
 
-            result.DisplaySettings.WindowHeight = height;
-            result.DisplaySettings.WindowWidth = width;
+            //result.DisplaySettings.WindowHeight = height;
+            //result.DisplaySettings.WindowWidth = width;
 
             return result;
         }

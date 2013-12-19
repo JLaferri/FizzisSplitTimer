@@ -45,7 +45,8 @@ namespace Fizzi.Applications.Splitter.ViewModel
 
         public bool SettingsWindowOpen { get; set; }
 
-        public SettingsViewModel SettingsViewModel { get; set; }
+        public SettingsViewModel SettingsViewModel { get; private set; }
+        public DisplaySettingsViewModel DisplaySettingsViewModel { get; private set; }
 
         private KeyboardListener keyListener = new KeyboardListener();
 
@@ -85,6 +86,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
 
             LiveTimer = new Timer(30);
             SettingsViewModel = new SettingsViewModel(keyListener);
+            DisplaySettingsViewModel = new DisplaySettingsViewModel();
 
             ResizeEnabled = false;
 
@@ -147,7 +149,11 @@ namespace Fizzi.Applications.Splitter.ViewModel
                 if (CurrentRun == null) LiveTimer.Clear();
                 else if (!CurrentRun.IsStarted) LiveTimer.Clear();
                 else if (CurrentRun.IsCompleted) LiveTimer.Stop(CurrentRun.Splits.Last().TimeFromRunStart);
-                else if (CurrentRun.IsStarted) LiveTimer.Start(CurrentRun.StartTime);
+                else if (CurrentRun.IsStarted)
+                {
+                    if (CurrentRun.CurrentSplit == 0) CurrentSplitRow = SplitRows[0];
+                    LiveTimer.Start(CurrentRun.StartTime);
+                }
             });
 
             //Monitor when run changes and a split is detected. This is used to update the split view
@@ -163,7 +169,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
                     case SplitChange.ActionEnum.Added:
                         SplitRows[args.EventArgs.Index].CurrentRunSplit = args.EventArgs.Item;
                         PreviousSplitRow = SplitRows[args.EventArgs.Index];
-                        CurrentSplitRow = SplitRows.Length > args.EventArgs.Index + 1 ? SplitRows[args.EventArgs.Index + 1] : SplitRows[args.EventArgs.Index];
+                        CurrentSplitRow = SplitRows.Length > args.EventArgs.Index + 1 ? SplitRows[args.EventArgs.Index + 1] : null;
                         break;
                     case SplitChange.ActionEnum.Reset:
                         var pbSplits = CurrentFile.PersonalBest.Splits;

@@ -24,10 +24,34 @@
         </Style>
     </Window.Style>
     <Window.Resources>
-        <Style TargetType="TextBlock">
+        <SolidColorBrush x:Key="BackgroundBrush" Color="#303030" />
+        <SolidColorBrush x:Key="CurrentSplitBackgroundBrush" Color="#303030" />
+        
+        <Style x:Key="MainText" TargetType="TextBlock">
             <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.CurrentFile.DisplaySettings.MainFont.Size, FallbackValue=14}" />
+            <Setter Property="FontFamily" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.CurrentFile.DisplaySettings.MainFont.Family, FallbackValue=Calibri}" />
+        </Style>
+
+        <Style x:Key="HeaderText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="{Binding CurrentFile.DisplaySettings.HeaderFont.Size, FallbackValue=14}" />
+            <Setter Property="FontFamily" Value="{Binding CurrentFile.DisplaySettings.HeaderFont.Family, FallbackValue=Calibri}" />
+        </Style>
+
+        <Style x:Key="TimerText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="{Binding CurrentFile.DisplaySettings.TimerFont.Size, FallbackValue=40}" />
+            <Setter Property="FontFamily" Value="{Binding CurrentFile.DisplaySettings.TimerFont.Family, FallbackValue=Calibri}" />
         </Style>
         
+        <Style x:Key="BorderStyle" TargetType="Border">
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="SnapsToDevicePixels" Value="true" />
+            <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+        </Style>
+
         <Style x:Key="DisabledWhenNoFile" TargetType="MenuItem">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding CurrentFile}" Value="{x:Null}">
@@ -35,11 +59,9 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-
-        <SolidColorBrush x:Key="BackgroundBrush" Color="#303030" />
-        <!--<SolidColorBrush x:Key="BackgroundBrush" Color="Gold" />-->
         
         <BooleanToVisibilityConverter x:Key="BoolToVisConv" />
+        <lview:ObjectEqualityConverter x:Key="ObjectEqualityConv" />
     </Window.Resources>
     <Grid Background="Black">
         <Grid.ContextMenu>
@@ -54,7 +76,8 @@
                 <Separator />
                 <MenuItem Header="Resize" IsCheckable="True" IsChecked="{Binding ResizeEnabled}" Visibility="{Binding Source={x:Static p:Settings.Default}, Path=AllowsTransparency, Mode=OneTime, Converter={StaticResource BoolToVisConv}}" />
                 <Separator Visibility="{Binding Source={x:Static p:Settings.Default}, Path=AllowsTransparency, Mode=OneTime, Converter={StaticResource BoolToVisConv}}" />
-                <MenuItem Header="Settings..." Click="SettingsMenuItem_Click" />
+                <MenuItem Header="Application Settings..." Click="SettingsMenuItem_Click" />
+                <MenuItem Header="Display Settings..." Click="DisplaySettingsMenuItem_Click" Style="{StaticResource DisabledWhenNoFile}" />
                 <Separator />
                 <MenuItem Header="Exit" Click="ExitMenuItem_Click" />
             </ContextMenu>
@@ -68,10 +91,10 @@
 
         <!--RenderOptions.ClearTypeHint="Enabled" TextOptions.TextFormattingMode="Display" RenderOptions.BitmapScalingMode="NearestNeighbor"-->
         
-        <Border Grid.Row="0" Margin="6,6,6,5" Background="{StaticResource BackgroundBrush}" BorderBrush="White" BorderThickness="1" SnapsToDevicePixels="True">
+        <Border Grid.Row="0" Margin="6,6,6,5" Style="{StaticResource BorderStyle}">
             <StackPanel>
                 <TextBlock Margin="3,1" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center"
-                           Text="{Binding CurrentFile.Header, FallbackValue=[File Not Loaded]}" FontSize="14" FontFamily="PF Arma Five" />
+                           Text="{Binding CurrentFile.Header, FallbackValue=[File Not Loaded]}" Style="{StaticResource HeaderText}" />
                 <!--<TextBlock Margin="3,1" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center"
                            Text="{Binding CurrentFile.PersonalBestDate, FallbackValue=N/A}" FontSize="14" FontFamily="PF Arma Five" />-->
             </StackPanel>
@@ -80,11 +103,22 @@
         <lview:SplitViewer Grid.Row="1" Splits="{Binding SplitRows}" CurrentSplit="{Binding CurrentSplitRow}" IsHitTestVisible="False">
             <lview:SplitViewer.SplitTemplate>
                 <DataTemplate>
-                    <Border  Margin="6,1" Background="{StaticResource BackgroundBrush}" BorderThickness="1" SnapsToDevicePixels="True">
+                    <Border Margin="6,1">
                         <Border.Style>
-                            <Style TargetType="Border">
+                            <Style TargetType="Border" BasedOn="{StaticResource BorderStyle}">
                                 <Setter Property="BorderBrush" Value="White" />
                                 <Style.Triggers>
+                                    <DataTrigger Value="True">
+                                        <DataTrigger.Binding>
+                                            <MultiBinding Converter="{StaticResource ObjectEqualityConv}">
+                                                <Binding />
+                                                <Binding RelativeSource="{RelativeSource AncestorType=Window, Mode=FindAncestor}" Path="DataContext.CurrentSplitRow" />
+                                            </MultiBinding>
+                                        </DataTrigger.Binding>
+
+                                        <Setter Property="Background" Value="{StaticResource CurrentSplitBackgroundBrush}" />
+                                        <Setter Property="CornerRadius" Value="3" />
+                                    </DataTrigger>
                                     <DataTrigger Binding="{Binding IsNewGoldSplit}" Value="True">
                                         <Setter Property="BorderBrush" Value="Gold" />
                                     </DataTrigger>
@@ -112,10 +146,10 @@
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Grid.Column="0" Margin="3,1" TextAlignment="Left" VerticalAlignment="Center"
-                                       Foreground="White" Text="{Binding Name}" FontSize="14" FontFamily="PF Arma Five" />
+                                       Text="{Binding Name}" Style="{StaticResource MainText}" />
 
                             <TextBlock Grid.Column="1" Margin="3,1" TextAlignment="Right" VerticalAlignment="Center"
-                                       Foreground="White" Text="{Binding Display}" FontSize="14" FontFamily="PF Arma Five" />
+                                       Text="{Binding Display}" Style="{StaticResource MainText}" />
                         </Grid>
                     </Border>
                 </DataTemplate>
@@ -134,66 +168,10 @@
                 <Border Margin="6,1" Height="3" Background="White" SnapsToDevicePixels="True" />
             </lview:SplitViewer.SeparatorContent>
         </lview:SplitViewer>
-        
-        <!--<ItemsControl Grid.Row="1" ItemsSource="{Binding SplitRows}">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <DockPanel LastChildFill="False"/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemContainerStyle>
-                <Style TargetType="ContentPresenter">
-                    <Setter Property="DockPanel.Dock" Value="Top"/>
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Border  Margin="6,1" Background="{StaticResource BackgroundBrush}" BorderThickness="1" SnapsToDevicePixels="True">
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Setter Property="BorderBrush" Value="White" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsNewGoldSplit}" Value="True">
-                                        <Setter Property="BorderBrush" Value="Gold" />
-                                    </DataTrigger>
-                                    <MultiDataTrigger>
-                                        <MultiDataTrigger.Conditions>
-                                            <Condition Binding="{Binding IsNewGoldSplit}" Value="False" />
-                                            <Condition Binding="{Binding IsAheadOfPb}" Value="True" />
-                                        </MultiDataTrigger.Conditions>
-                                        <Setter Property="BorderBrush" Value="LimeGreen" />
-                                    </MultiDataTrigger>
-                                    <MultiDataTrigger>
-                                        <MultiDataTrigger.Conditions>
-                                            <Condition Binding="{Binding IsNewGoldSplit}" Value="False" />
-                                            <Condition Binding="{Binding IsAheadOfPb}" Value="False" />
-                                        </MultiDataTrigger.Conditions>
-                                        <Setter Property="BorderBrush" Value="Red" />
-                                    </MultiDataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Grid.Column="0" Margin="3,1" TextAlignment="Left" VerticalAlignment="Center"
-                                       Foreground="White" Text="{Binding Name}" FontSize="14" FontFamily="PF Arma Five" />
-
-                            <TextBlock Grid.Column="1" Margin="3,1" TextAlignment="Right" VerticalAlignment="Center"
-                                       Foreground="White" Text="{Binding Display}" FontSize="14" FontFamily="PF Arma Five" />
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>-->
             
-        <TextBlock Grid.Row="2" Margin="6" TextAlignment="Right" VerticalAlignment="Center" Foreground="White"
-                   FontSize="40" FontFamily="Liquid Crystal">
+        <TextBlock Grid.Row="2" Margin="6,2,6,3" TextAlignment="Right" VerticalAlignment="Center" Foreground="White">
             <TextBlock.Style>
-                <Style TargetType="TextBlock">
+                <Style TargetType="TextBlock" BasedOn="{StaticResource TimerText}">
                     <Setter Property="Text" Value="{Binding LiveTimer.OverrideTimeDisplay}" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding LiveTimer.OverrideTimeDisplay}" Value="{x:Null}">
@@ -204,26 +182,26 @@
             </TextBlock.Style>
         </TextBlock>
         
-        <Grid Grid.Row="3" Margin="3,6">
+        <Grid Grid.Row="3" Margin="3,3,3,6">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Margin="3,0,3,0" Background="{StaticResource BackgroundBrush}" BorderBrush="White" BorderThickness="1" SnapsToDevicePixels="True">
+            <Border Grid.Column="0" Margin="3,0,3,0" Style="{StaticResource BorderStyle}">
                 <TextBlock Margin="3,1" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center"
-                           Text="{Binding PreviousSplitRow.PbOffsetDisplay}" FontSize="14" FontFamily="PF Arma Five" />
+                           Text="{Binding PreviousSplitRow.PbOffsetDisplay}" Style="{StaticResource MainText}" />
             </Border>
 
-            <Border Grid.Column="1" Margin="3,0,3,0" Background="{StaticResource BackgroundBrush}" BorderBrush="Gold" BorderThickness="1" SnapsToDevicePixels="True">
+            <Border Grid.Column="1" Margin="3,0,3,0" BorderBrush="Gold" Style="{StaticResource BorderStyle}">
                 <TextBlock Margin="3,1" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center"
-                           Text="{Binding PreviousSplitRow.GoldOffsetDisplay}" FontSize="14" FontFamily="PF Arma Five" />
+                           Text="{Binding PreviousSplitRow.GoldOffsetDisplay}" Style="{StaticResource MainText}" />
             </Border>
 
-            <Border Grid.Column="2" Margin="3,0,3,0" Visibility="Collapsed" Background="{StaticResource BackgroundBrush}" BorderBrush="White" BorderThickness="1" SnapsToDevicePixels="True">
+            <Border Grid.Column="2" Margin="3,0,3,0" Visibility="Collapsed" Style="{StaticResource BorderStyle}">
                 <TextBlock Margin="3,1" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center"
-                           Text="{Binding CurrentFile.PersonalBestDate, FallbackValue=N/A, StringFormat={}{0:d}}" FontSize="14" FontFamily="PF Arma Five" />
+                           Text="{Binding CurrentFile.PersonalBestDate, FallbackValue=N/A, StringFormat={}{0:d}}" Style="{StaticResource MainText}" />
             </Border>
         </Grid>
     </Grid>

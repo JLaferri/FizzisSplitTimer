@@ -93,15 +93,21 @@ namespace Fizzi.Applications.Splitter.View
 
             List<SplitRowDisplayContainer> displaySplits;
 
+            var isRunCompleted = FinalSplit.CurrentRunSplit != null && FinalSplit.CurrentRunSplit.Owner.IsCompleted;
+
             //Determine if final split will be displayed
-            IsFinalSplitDisplayed = Splits.Length <= MaxItemCount || CurrentSplit == FinalSplit;
+            IsFinalSplitDisplayed = Splits.Length <= MaxItemCount || CurrentSplit == FinalSplit || isRunCompleted;
 
             int amountToGrab = MaxItemCount;
 
             //If the final split is not displayed, grab one less split in order to display it
             if (!IsFinalSplitDisplayed) amountToGrab--;
 
-            if (CurrentSplit == null) displaySplits = Splits.Take(amountToGrab).Select(r => new SplitRowDisplayContainer(r)).ToList();
+            if (CurrentSplit == null)
+            {
+                if (isRunCompleted) displaySplits = Splits.Skip(Splits.Length - amountToGrab).Take(amountToGrab).Select(r => new SplitRowDisplayContainer(r)).ToList();
+                else displaySplits = Splits.Take(amountToGrab).Select(r => new SplitRowDisplayContainer(r)).ToList();
+            }
             else
             {
                 var currentSplitPosition = Array.IndexOf(Splits, CurrentSplit);

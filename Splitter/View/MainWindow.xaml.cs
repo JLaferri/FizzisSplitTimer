@@ -84,5 +84,22 @@ namespace Fizzi.Applications.Splitter.View
         {
             if (e.ChangedButton == MouseButton.Left) this.DragMove();
         }
+
+        private void DisplaySettingsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var mvm = (ViewModel.MainViewModel)DataContext;
+
+            mvm.SettingsWindowOpen = true;
+
+            var window = new DisplaySettingsWindow()
+            {
+                DataContext = mvm,
+                Owner = this
+            };
+
+            window.ShowDialog();
+
+            mvm.SettingsWindowOpen = false;
+        }
     }
 }

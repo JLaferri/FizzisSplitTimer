@@ -36,18 +36,6 @@ namespace Fizzi.Applications.Splitter.ViewModel
         private bool? _isAheadOfPb;
         public bool? IsAheadOfPb { get { return _isAheadOfPb; } private set { this.RaiseAndSetIfChanged("IsAheadOfPb", ref _isAheadOfPb, value, PropertyChanged); } }
 
-        private double _itemHeight;
-        public double ItemHeight
-        {
-            get
-            {
-                return _itemHeight;
-            }
-            set
-            {
-                _itemHeight = value;
-            }
-        }
         public SplitRowDisplay(string name, Split pbSplit, Split goldSplit)
         {
             Name = name;
@@ -90,7 +78,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
                             displaySetter = Timer.FormatElapsedTimeSpan(CurrentRunSplit.TimeFromRunStart);
                         }
 
-                        if (CurrentRunSplit.IsWellBounded && GoldSplit.IsWellBounded)
+                        if (CurrentRunSplit.IsWellBounded && GoldSplit.SplitInfo != SplitTimeSpan.Unknown)
                         {
                             //If both current split and gold split are well bounded, we can show gold split differential
                             goldOffsetSetter = Timer.FormatTimeDifferential(CurrentRunSplit.Time.Subtract(GoldSplit.Time));
