@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel;
 using Fizzi.Applications.Splitter.Common;
 using System.Reactive.Linq;
+using System.Globalization;
 
 namespace Fizzi.Applications.Splitter.Model
 {
@@ -76,10 +77,15 @@ namespace Fizzi.Applications.Splitter.Model
             int seconds = time.Seconds;
             int fractional = (int)(time.Milliseconds / 10);
 
+            var ccDecimalSeparator = System.Globalization.NumberFormatInfo.CurrentInfo.NumberDecimalSeparator;
+            var ccTimeSeparator = System.Globalization.DateTimeFormatInfo.CurrentInfo.TimeSeparator;
+
             string timeString;
-            if (hours > 0) timeString = string.Format("{3}:{2:00}:{1:00}.{0:00}", fractional, seconds, minutes, hours);
-            else if (minutes > 0) timeString = string.Format("{2}:{1:00}.{0:00}", fractional, seconds, minutes);
-            else timeString = string.Format("{1}.{0:00}", fractional, seconds);
+            if (hours > 0) timeString = string.Format("{3}{5}{2:00}{5}{1:00}{4}{0:00}", fractional, seconds, minutes,
+                hours, ccDecimalSeparator, ccTimeSeparator);
+            else if (minutes > 0) timeString = string.Format("{2}{5}{1:00}{4}{0:00}", fractional, seconds, minutes,
+                ccDecimalSeparator, ccTimeSeparator);
+            else timeString = string.Format("{1}{4}{0:00}", fractional, seconds, ccDecimalSeparator);
 
             return timeString;
         }
@@ -94,7 +100,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
 
             var elapsedTimeString = FormatElapsedTimeSpan(time);
-            string signCharacter = isNegative ? "-" : "+";
+            string signCharacter = isNegative ? NumberFormatInfo.CurrentInfo.NegativeSign : NumberFormatInfo.CurrentInfo.PositiveSign;
 
             return signCharacter + elapsedTimeString;
         }

@@ -5,6 +5,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Splitter", "Splitter\Splitt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FontDialog", "FontDialog\FontDialog.csproj", "{889D6549-F143-46B8-8894-504F017467D7}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer_x64", "Installer_x64\Installer_x64.vdproj", "{1F1FB555-3CEF-40C3-B496-E52F329F6D2A}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer_x86", "Installer_x86\Installer_x86.vdproj", "{2A8BF1D9-3BB8-4045-A201-B811D0837151}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +52,22 @@ Global
 		{889D6549-F143-46B8-8894-504F017467D7}.Release|x64.Build.0 = Release|Any CPU
 		{889D6549-F143-46B8-8894-504F017467D7}.Release|x86.ActiveCfg = Release|Any CPU
 		{889D6549-F143-46B8-8894-504F017467D7}.Release|x86.Build.0 = Release|Any CPU
+		{1F1FB555-3CEF-40C3-B496-E52F329F6D2A}.Debug|Any CPU.ActiveCfg = Debug
+		{1F1FB555-3CEF-40C3-B496-E52F329F6D2A}.Debug|Mixed Platforms.ActiveCfg = Debug
+		{1F1FB555-3CEF-40C3-B496-E52F329F6D2A}.Debug|x64.ActiveCfg = Debug
+		{1F1FB555-3CEF-40C3-B496-E52F329F6D2A}.Debug|x86.ActiveCfg = Debug
+		{1F1FB555-3CEF-40C3-B496-E52F329F6D2A}.Release|Any CPU.ActiveCfg = Release
+		{1F1FB555-3CEF-40C3-B496-E52F329F6D2A}.Release|Mixed Platforms.ActiveCfg = Release
+		{1F1FB555-3CEF-40C3-B496-E52F329F6D2A}.Release|x64.ActiveCfg = Release
+		{1F1FB555-3CEF-40C3-B496-E52F329F6D2A}.Release|x86.ActiveCfg = Release
+		{2A8BF1D9-3BB8-4045-A201-B811D0837151}.Debug|Any CPU.ActiveCfg = Debug
+		{2A8BF1D9-3BB8-4045-A201-B811D0837151}.Debug|Mixed Platforms.ActiveCfg = Debug
+		{2A8BF1D9-3BB8-4045-A201-B811D0837151}.Debug|x64.ActiveCfg = Debug
+		{2A8BF1D9-3BB8-4045-A201-B811D0837151}.Debug|x86.ActiveCfg = Debug
+		{2A8BF1D9-3BB8-4045-A201-B811D0837151}.Release|Any CPU.ActiveCfg = Release
+		{2A8BF1D9-3BB8-4045-A201-B811D0837151}.Release|Mixed Platforms.ActiveCfg = Release
+		{2A8BF1D9-3BB8-4045-A201-B811D0837151}.Release|x64.ActiveCfg = Release
+		{2A8BF1D9-3BB8-4045-A201-B811D0837151}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

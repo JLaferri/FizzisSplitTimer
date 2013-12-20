@@ -212,7 +212,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("Error importing splits from WSplit. The file may be malformed.", "Error Importing", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(MainWindow, "Error importing splits from WSplit. The file may be malformed.", "Error Importing", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -229,14 +229,31 @@ namespace Fizzi.Applications.Splitter.ViewModel
             var result = ofd.ShowDialog(MainWindow);
             if (result.HasValue && result.Value)
             {
-                CurrentFile = SplitFile.Load(ofd.FileName);
+                try
+                {
+                    CurrentFile = SplitFile.Load(ofd.FileName);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show(MainWindow, "Error loading file. The file might be corrupt.", "Error Loading", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
         public void SaveCurrentFile()
         {
             if (!CurrentFile.IsPathSet) SaveCurrentFileAs();
-            else CurrentFile.MergeAndSave(CurrentRun);
+            else
+            {
+                try
+                {
+                    CurrentFile.MergeAndSave(CurrentRun);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show(MainWindow, "Error saving file. Perhaps you don't have access to that folder.", "Error Saving", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
 
             CurrentRun = new Run(CurrentFile.RunDefinition.Length);
         }
@@ -253,8 +270,18 @@ namespace Fizzi.Applications.Splitter.ViewModel
             var result = ofd.ShowDialog(MainWindow);
             if (result.HasValue && result.Value)
             {
-                CurrentFile.Path = ofd.FileName;
-                SaveCurrentFile();
+                var oldFilePath = CurrentFile.Path;
+
+                try
+                {
+                    CurrentFile.Path = ofd.FileName;
+                    SaveCurrentFile();
+                }
+                catch (Exception)
+                {
+                    CurrentFile.Path = oldFilePath;
+                    MessageBox.Show(MainWindow, "Error saving file. Perhaps you don't have access to that folder.", "Error Importing", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -262,7 +289,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
         {
             if (CurrentFile != null && CurrentRun != null && CurrentFile.CheckMergeSuggested(CurrentRun))
             {
-                var result = MessageBox.Show("We have detected that your current run has unsaved gold splits or a new personal best. Would you like to save?",
+                var result = MessageBox.Show(MainWindow, "We have detected that your current run has unsaved gold splits or a new personal best. Would you like to save?",
                     "Save Records?", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                 if (result == MessageBoxResult.Yes) SaveCurrentFile();

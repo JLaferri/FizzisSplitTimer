@@ -114,6 +114,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\ExceptionEx.cs" />
     <Compile Include="Common\Notifiable.cs" />
     <Compile Include="Model\DisplaySettings.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

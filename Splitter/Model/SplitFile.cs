@@ -166,8 +166,8 @@ namespace Fizzi.Applications.Splitter.Model
                 return new
                 {
                     Name = commaSplit[0],
-                    PbTime = TimeSpan.FromSeconds(double.Parse(commaSplit[2])),
-                    Gold = TimeSpan.FromSeconds(double.Parse(commaSplit[3]))
+                    PbTime = TimeSpan.FromSeconds(double.Parse(commaSplit[2], System.Globalization.CultureInfo.InvariantCulture)),
+                    Gold = TimeSpan.FromSeconds(double.Parse(commaSplit[3], System.Globalization.CultureInfo.InvariantCulture))
                 };
             }).ToArray();
 
