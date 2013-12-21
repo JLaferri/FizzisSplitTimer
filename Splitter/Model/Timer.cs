@@ -83,9 +83,9 @@ namespace Fizzi.Applications.Splitter.Model
             string timeString;
             if (hours > 0) timeString = string.Format("{3}{5}{2:00}{5}{1:00}{4}{0:00}", fractional, seconds, minutes,
                 hours, ccDecimalSeparator, ccTimeSeparator);
-            else if (minutes > 0) timeString = string.Format("{2}{5}{1:00}{4}{0:00}", fractional, seconds, minutes,
+            else if (minutes > 0) timeString = string.Format("{2}{4}{1:00}{3}{0:00}", fractional, seconds, minutes,
                 ccDecimalSeparator, ccTimeSeparator);
-            else timeString = string.Format("{1}{4}{0:00}", fractional, seconds, ccDecimalSeparator);
+            else timeString = string.Format("{1}{2}{0:00}", fractional, seconds, ccDecimalSeparator);
 
             return timeString;
         }
