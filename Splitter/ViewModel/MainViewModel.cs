@@ -43,6 +43,12 @@ namespace Fizzi.Applications.Splitter.ViewModel
         private bool _resizeEnabled;
         public bool ResizeEnabled { get { return _resizeEnabled; } set { this.RaiseAndSetIfChanged("ResizeEnabled", ref _resizeEnabled, value, PropertyChanged); } }
 
+        private bool _showGoldSplits;
+        public bool ShowGoldSplits { get { return _showGoldSplits; } set { this.RaiseAndSetIfChanged("ShowGoldSplits", ref _showGoldSplits, value, PropertyChanged); } }
+
+        private bool _isCurrentRunStarted;
+        public bool IsCurrentRunStarted { get { return _isCurrentRunStarted; } set { this.RaiseAndSetIfChanged("IsCurrentRunStarted", ref _isCurrentRunStarted, value, PropertyChanged); } }
+
         public bool SettingsWindowOpen { get; set; }
 
         public SettingsViewModel SettingsViewModel { get; private set; }
@@ -91,6 +97,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
             DisplaySettingsViewModel = new DisplaySettingsViewModel();
 
             ResizeEnabled = false;
+            ShowGoldSplits = true;
 
             //Subscribe to keyboard events
             keyListener.KeyDown += (sender, e) =>
@@ -148,12 +155,23 @@ namespace Fizzi.Applications.Splitter.ViewModel
             //Monitor when run changes and changes state in order to control live timer
             runStatusObs.Switch().Subscribe(_ =>
             {
-                if (CurrentRun == null) LiveTimer.Clear();
-                else if (!CurrentRun.IsStarted) LiveTimer.Clear();
-                else if (CurrentRun.IsCompleted) LiveTimer.Stop(CurrentRun.Splits.Last().TimeFromRunStart);
+                if (CurrentRun == null || !CurrentRun.IsStarted)
+                {
+                    IsCurrentRunStarted = false;
+                    LiveTimer.Clear();
+                }
+                else if (CurrentRun.IsCompleted)
+                {
+                    LiveTimer.Stop(CurrentRun.RunTime);
+                }
                 else if (CurrentRun.IsStarted)
                 {
-                    if (CurrentRun.CurrentSplit == 0) CurrentSplitRow = SplitRows[0];
+                    if (CurrentRun.CurrentSplit == 0)
+                    {
+                        IsCurrentRunStarted = true;
+                        CurrentSplitRow = SplitRows[0];
+                    }
+
                     LiveTimer.Start(CurrentRun.StartTime);
                 }
             });

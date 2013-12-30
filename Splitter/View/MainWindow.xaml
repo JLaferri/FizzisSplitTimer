@@ -76,6 +76,8 @@
                 <Separator />
                 <MenuItem Header="Resize" IsCheckable="True" IsChecked="{Binding ResizeEnabled}" Visibility="{Binding Source={x:Static p:Settings.Default}, Path=AllowsTransparency, Mode=OneTime, Converter={StaticResource BoolToVisConv}}" />
                 <Separator Visibility="{Binding Source={x:Static p:Settings.Default}, Path=AllowsTransparency, Mode=OneTime, Converter={StaticResource BoolToVisConv}}" />
+                <MenuItem Header="Show Gold Times" IsCheckable="True" IsChecked="{Binding ShowGoldSplits}" />
+                <Separator />
                 <MenuItem Header="Application Settings..." Click="SettingsMenuItem_Click" />
                 <MenuItem Header="Display Settings..." Click="DisplaySettingsMenuItem_Click" Style="{StaticResource DisabledWhenNoFile}" />
                 <Separator />
@@ -103,55 +105,80 @@
         <lview:SplitViewer Grid.Row="1" Splits="{Binding SplitRows}" CurrentSplit="{Binding CurrentSplitRow}" IsHitTestVisible="False">
             <lview:SplitViewer.SplitTemplate>
                 <DataTemplate>
-                    <Border Margin="6,1">
-                        <Border.Style>
-                            <Style TargetType="Border" BasedOn="{StaticResource BorderStyle}">
-                                <Setter Property="BorderBrush" Value="White" />
-                                <Style.Triggers>
-                                    <DataTrigger Value="True">
-                                        <DataTrigger.Binding>
-                                            <MultiBinding Converter="{StaticResource ObjectEqualityConv}">
-                                                <Binding />
-                                                <Binding RelativeSource="{RelativeSource AncestorType=Window, Mode=FindAncestor}" Path="DataContext.CurrentSplitRow" />
-                                            </MultiBinding>
-                                        </DataTrigger.Binding>
+                    <Grid Margin="5,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <Border Grid.Column="0" Margin="1">
+                            <Border.Style>
+                                <Style TargetType="Border" BasedOn="{StaticResource BorderStyle}">
+                                    <Setter Property="BorderBrush" Value="White" />
+                                    <Style.Triggers>
+                                        <DataTrigger Value="True">
+                                            <DataTrigger.Binding>
+                                                <MultiBinding Converter="{StaticResource ObjectEqualityConv}">
+                                                    <Binding />
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=Window, Mode=FindAncestor}" Path="DataContext.CurrentSplitRow" />
+                                                </MultiBinding>
+                                            </DataTrigger.Binding>
 
-                                        <Setter Property="Background" Value="{StaticResource CurrentSplitBackgroundBrush}" />
-                                        <Setter Property="CornerRadius" Value="3" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding IsNewGoldSplit}" Value="True">
-                                        <Setter Property="BorderBrush" Value="Gold" />
-                                    </DataTrigger>
-                                    <MultiDataTrigger>
-                                        <MultiDataTrigger.Conditions>
-                                            <Condition Binding="{Binding IsNewGoldSplit}" Value="False" />
-                                            <Condition Binding="{Binding IsAheadOfPb}" Value="True" />
-                                        </MultiDataTrigger.Conditions>
-                                        <Setter Property="BorderBrush" Value="LimeGreen" />
-                                    </MultiDataTrigger>
-                                    <MultiDataTrigger>
-                                        <MultiDataTrigger.Conditions>
-                                            <Condition Binding="{Binding IsNewGoldSplit}" Value="False" />
-                                            <Condition Binding="{Binding IsAheadOfPb}" Value="False" />
-                                        </MultiDataTrigger.Conditions>
-                                        <Setter Property="BorderBrush" Value="Red" />
-                                    </MultiDataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                                            <Setter Property="Background" Value="{StaticResource CurrentSplitBackgroundBrush}" />
+                                            <Setter Property="CornerRadius" Value="4" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsNewGoldSplit}" Value="True">
+                                            <Setter Property="BorderBrush" Value="Gold" />
+                                        </DataTrigger>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding IsNewGoldSplit}" Value="False" />
+                                                <Condition Binding="{Binding IsAheadOfPb}" Value="True" />
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="BorderBrush" Value="LimeGreen" />
+                                        </MultiDataTrigger>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding IsNewGoldSplit}" Value="False" />
+                                                <Condition Binding="{Binding IsAheadOfPb}" Value="False" />
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="BorderBrush" Value="Red" />
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0" Margin="3,1" TextAlignment="Left" VerticalAlignment="Center"
+                                <TextBlock Grid.Column="0" Margin="3,1" TextAlignment="Left" VerticalAlignment="Center"
                                        Text="{Binding Name}" Style="{StaticResource MainText}" />
 
-                            <TextBlock Grid.Column="1" Margin="3,1" TextAlignment="Right" VerticalAlignment="Center"
+                                <TextBlock Grid.Column="1" Margin="3,1" TextAlignment="Right" VerticalAlignment="Center"
                                        Text="{Binding Display}" Style="{StaticResource MainText}" />
-                        </Grid>
-                    </Border>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Column="1" Margin="1" BorderBrush="Gold">
+                            <Border.Style>
+                                <Style TargetType="Border" BasedOn="{StaticResource BorderStyle}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.ShowGoldSplits}" Value="false">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.IsCurrentRunStarted}" Value="true">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger> 
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <TextBlock Margin="3,1" TextAlignment="Center" VerticalAlignment="Center"
+                                       Text="{Binding GoldDisplay}" Style="{StaticResource MainText}" />
+                        </Border>
+                    </Grid>
+                    
                 </DataTemplate>
             </lview:SplitViewer.SplitTemplate>
             

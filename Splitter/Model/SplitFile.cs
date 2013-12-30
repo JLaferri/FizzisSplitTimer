@@ -119,12 +119,7 @@ namespace Fizzi.Applications.Splitter.Model
         public bool IsPersonalBest(Run latestRun)
         {
             //Check if this run was better than personal best
-            var lastLatestSplit = latestRun.Splits.Last();
-            var lastPersonalBestSplit = PersonalBest.Splits.Last();
-
-            if (lastLatestSplit == null) return false;
-
-            return lastLatestSplit.TimeFromRunStart < lastPersonalBestSplit.TimeFromRunStart;
+            return latestRun.RunTime < PersonalBest.RunTime;
         }
 
         public static SplitFile Load(string path)

@@ -15,6 +15,9 @@ namespace Fizzi.Applications.Splitter.ViewModel
         private string _display;
         public string Display { get { return _display; } private set { this.RaiseAndSetIfChanged("Display", ref _display, value, PropertyChanged); } }
 
+        private string _goldDisplay;
+        public string GoldDisplay { get { return _goldDisplay; } private set { this.RaiseAndSetIfChanged("GoldDisplay", ref _goldDisplay, value, PropertyChanged); } }
+
         private Split _personalBestSplit;
         public Split PersonalBestSplit { get { return _personalBestSplit; } private set { this.RaiseAndSetIfChanged("PersonalBestSplit", ref _personalBestSplit, value, PropertyChanged); } }
 
@@ -50,6 +53,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
                     IsAheadOfPb = Split.IsFasterTotalTime(CurrentRunSplit, PersonalBestSplit);
 
                     var displaySetter = "[??]";
+                    var goldDisplaySetter = "[??]";
                     var pbOffsetSetter = "[??]";
                     var goldOffsetSetter = "[??]";
 
@@ -60,6 +64,11 @@ namespace Fizzi.Applications.Splitter.ViewModel
                         if (PersonalBestSplit.IsPrecise)
                         {
                             displaySetter = Timer.FormatElapsedTimeSpan(PersonalBestSplit.TimeFromRunStart);
+                        }
+
+                        if (GoldSplit.IsWellBounded)
+                        {
+                            goldDisplaySetter = Timer.FormatElapsedTimeSpan(GoldSplit.TimeFromRunStart);
                         }
                     }
                     else
@@ -92,6 +101,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
                     }
 
                     Display = displaySetter;
+                    GoldDisplay = goldDisplaySetter;
                     PbOffsetDisplay = pbOffsetSetter;
                     GoldOffsetDisplay = goldOffsetSetter;
                 }

@@ -21,6 +21,19 @@ namespace Fizzi.Applications.Splitter.Model
         public DateTime? PauseTime { get; private set; }
         public DateTime StartTime { get; private set; }
 
+        public TimeSpan RunTime
+        {
+            get
+            {
+                if (Splits == null) return TimeSpan.MaxValue;
+
+                var finalSplit = Splits.LastOrDefault();
+                if (finalSplit == null || !finalSplit.IsPrecise) return TimeSpan.MaxValue;
+
+                return finalSplit.TimeFromRunStart;
+            }
+        }
+
         public Run(int splitCount)
         {
             if (splitCount < 1) throw new ArgumentOutOfRangeException("Runs must contain at least one split.");
