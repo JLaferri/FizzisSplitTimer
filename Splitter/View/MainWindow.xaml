@@ -7,8 +7,8 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         x:Name="MainWindowName"
         WindowStyle="None" AllowsTransparency="{Binding Source={x:Static p:Settings.Default}, Path=AllowsTransparency, Mode=OneTime}"
-        Height="{Binding CurrentFile.DisplaySettings.WindowHeight, Mode=TwoWay, FallbackValue=400}"
-        Width="{Binding CurrentFile.DisplaySettings.WindowWidth, Mode=TwoWay, FallbackValue=250}"
+        Height="{Binding CurrentFile.DisplayTemplate.WindowHeight, Mode=TwoWay, FallbackValue=400}"
+        Width="{Binding CurrentFile.DisplayTemplate.WindowWidth, Mode=TwoWay, FallbackValue=250}"
         MouseDown="Window_MouseDown" Title="Fizzi's Split Timer">
     <Window.DataContext>
         <lvm:MainViewModel />
@@ -29,24 +29,25 @@
         
         <Style x:Key="MainText" TargetType="TextBlock">
             <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.CurrentFile.DisplaySettings.MainFont.Size, FallbackValue=14}" />
-            <Setter Property="FontFamily" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.CurrentFile.DisplaySettings.MainFont.Family, FallbackValue=Calibri}" />
+            <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.MainFont.Size, FallbackValue=14}" />
+            <Setter Property="FontFamily" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.MainFont.Family, FallbackValue=Calibri}" />
         </Style>
 
         <Style x:Key="HeaderText" TargetType="TextBlock">
             <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="{Binding CurrentFile.DisplaySettings.HeaderFont.Size, FallbackValue=14}" />
-            <Setter Property="FontFamily" Value="{Binding CurrentFile.DisplaySettings.HeaderFont.Family, FallbackValue=Calibri}" />
+            <Setter Property="FontSize" Value="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.HeaderFont.Size, FallbackValue=14}" />
+            <Setter Property="FontFamily" Value="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.HeaderFont.Family, FallbackValue=Calibri}" />
         </Style>
 
         <Style x:Key="TimerText" TargetType="TextBlock">
             <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontSize" Value="{Binding CurrentFile.DisplaySettings.TimerFont.Size, FallbackValue=40}" />
-            <Setter Property="FontFamily" Value="{Binding CurrentFile.DisplaySettings.TimerFont.Family, FallbackValue=Calibri}" />
+            <Setter Property="FontSize" Value="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.TimerFont.Size, FallbackValue=40}" />
+            <Setter Property="FontFamily" Value="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.TimerFont.Family, FallbackValue=Calibri}" />
         </Style>
         
         <Style x:Key="BorderStyle" TargetType="Border">
-            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BorderThickness" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.DefaultPanel.BorderThickness, FallbackValue=2}" />
+            <Setter Property="CornerRadius" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.DefaultPanel.BorderCornerRadius, FallbackValue=0}" />
             <Setter Property="BorderBrush" Value="White" />
             <Setter Property="SnapsToDevicePixels" Value="true" />
             <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
@@ -79,7 +80,7 @@
                 <MenuItem Header="Show Gold Times" IsCheckable="True" IsChecked="{Binding ShowGoldSplits}" />
                 <Separator />
                 <MenuItem Header="Application Settings..." Click="SettingsMenuItem_Click" />
-                <MenuItem Header="Display Settings..." Click="DisplaySettingsMenuItem_Click" Style="{StaticResource DisabledWhenNoFile}" />
+                <MenuItem Header="Display Settings..." Click="DisplaySettingsMenuItem_Click" />
                 <Separator />
                 <MenuItem Header="Exit" Click="ExitMenuItem_Click" />
             </ContextMenu>
@@ -92,8 +93,10 @@
         </Grid.RowDefinitions>
 
         <!--RenderOptions.ClearTypeHint="Enabled" TextOptions.TextFormattingMode="Display" RenderOptions.BitmapScalingMode="NearestNeighbor"-->
-        
-        <Border Grid.Row="0" Margin="6,6,6,5" Style="{StaticResource BorderStyle}">
+
+        <Border Grid.Row="0" Margin="6,6,6,5" Style="{StaticResource BorderStyle}" 
+                BorderThickness="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.HeaderPanel.BorderThickness}"
+                CornerRadius="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.HeaderPanel.BorderCornerRadius}">
             <StackPanel>
                 <TextBlock Margin="3,1" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center"
                            Text="{Binding CurrentFile.Header, FallbackValue=[File Not Loaded]}" Style="{StaticResource HeaderText}" />
@@ -125,7 +128,8 @@
                                             </DataTrigger.Binding>
 
                                             <Setter Property="Background" Value="{StaticResource CurrentSplitBackgroundBrush}" />
-                                            <Setter Property="CornerRadius" Value="4" />
+                                            <Setter Property="BorderThickness" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.CurrentSplitPanel.BorderThickness, FallbackValue=2}" />
+                                            <Setter Property="CornerRadius" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.CurrentSplitPanel.BorderCornerRadius, FallbackValue=0}" />
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding IsNewGoldSplit}" Value="True">
                                             <Setter Property="BorderBrush" Value="Gold" />

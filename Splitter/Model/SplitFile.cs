@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Xml;
 using Fizzi.Applications.Splitter.Common;
+using Fizzi.Applications.Splitter.Properties;
 
 namespace Fizzi.Applications.Splitter.Model
 {
@@ -26,9 +27,28 @@ namespace Fizzi.Applications.Splitter.Model
         private SplitInfo[] _runDefinition;
         public SplitInfo[] RunDefinition { get { return _runDefinition; } private set { this.RaiseAndSetIfChanged("RunDefinition", ref _runDefinition, value, PropertyChanged); } }
 
+#pragma warning disable 618
+
         [DataMember(Name = "DisplaySettings")]
         private DisplaySettings _displaySettings;
         public DisplaySettings DisplaySettings { get { return _displaySettings; } private set { this.RaiseAndSetIfChanged("DisplaySettings", ref _displaySettings, value, PropertyChanged); } }
+
+#pragma warning restore 618
+
+        private DisplayTemplate _displayTemplate;
+        public DisplayTemplate DisplayTemplate 
+        {
+            get { return _displayTemplate; } 
+            set 
+            {
+                this.RaiseAndSetIfChanged("DisplayTemplate", ref _displayTemplate, value, PropertyChanged);
+                
+                DisplayTemplateId = value == null ? Guid.Empty : value.TemplateId;
+            } 
+        }
+
+        [DataMember(Name = "DisplayTemplateId")]
+        private Guid DisplayTemplateId { get; set; }
 
         private Run _personalBest;
         public Run PersonalBest { get { return _personalBest; } private set { this.RaiseAndSetIfChanged("PersonalBest", ref _personalBest, value, PropertyChanged); } }
@@ -46,15 +66,26 @@ namespace Fizzi.Applications.Splitter.Model
             Header = header;
             RunDefinition = runDefinition;
 
-            DisplaySettings = new Model.DisplaySettings();
-
-            generateRunsFromDefinition();
+            initialize();
         }
 
         [OnDeserialized]
         void OnDeserialized(StreamingContext c)
         {
+            initialize();
+        }
+
+        private void initialize()
+        {
             generateRunsFromDefinition();
+
+            //Attempt to get template from template id
+            var template = PersistenceManager.Instance.DisplayTemplates.Where(dt => dt.TemplateId == DisplayTemplateId).FirstOrDefault();
+
+            //If GUID cannot be found, load the default template
+            if (template == null) template = PersistenceManager.Instance.DisplayTemplates.FirstOrDefault();
+
+            DisplayTemplate = template;
         }
 
         private void generateRunsFromDefinition()
@@ -137,7 +168,20 @@ namespace Fizzi.Applications.Splitter.Model
             //Set path to be what we loaded
             file.Path = path;
 
-            if (file.DisplaySettings == null) file.DisplaySettings = new DisplaySettings();
+            //If file has data for DisplaySettings, this is a file from version 1.2.4 or below - create a template from it
+            if (file.DisplaySettings != null)
+            {
+                var templateFromSettings = file.DisplaySettings.ConvertToTemplate();
+                templateFromSettings.TemplateName = file.Header + " Template";
+
+                PersistenceManager.Instance.DisplayTemplates.Add(templateFromSettings);
+                PersistenceManager.Instance.DisplayTemplatesConfiguration.Save();
+
+                file.DisplayTemplate = templateFromSettings;
+
+                file.DisplaySettings = null;
+                file.Save();
+            }
 
             return file;
         }

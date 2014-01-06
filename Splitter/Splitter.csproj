@@ -82,6 +82,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Reactive.Core">
       <HintPath>..\packages\Rx-Core.2.1.30214.0\lib\Net40\System.Reactive.Core.dll</HintPath>
@@ -116,7 +117,11 @@
     </ApplicationDefinition>
     <Compile Include="Common\ExceptionEx.cs" />
     <Compile Include="Common\Notifiable.cs" />
+    <Compile Include="Model\DisplayPanelTemplate.cs" />
     <Compile Include="Model\DisplaySettings.cs" />
+    <Compile Include="Model\DisplayTemplate.cs" />
+    <Compile Include="Model\DisplayTemplatesConfiguration.cs" />
+    <Compile Include="Model\PersistenceManager.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

@@ -11,6 +11,8 @@ using System.Reactive.Linq;
 using System.Reactive;
 using System.Windows;
 using Fizzi.Applications.Splitter.Properties;
+using System.Collections.ObjectModel;
+using System.Configuration;
 
 namespace Fizzi.Applications.Splitter.ViewModel
 {
@@ -52,7 +54,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
         public bool SettingsWindowOpen { get; set; }
 
         public SettingsViewModel SettingsViewModel { get; private set; }
-        public DisplaySettingsViewModel DisplaySettingsViewModel { get; private set; }
+        public DisplayTemplatesViewModel DisplaySettingsViewModel { get; private set; }
 
         public View.MainWindow MainWindow { get; set; }
 
@@ -60,6 +62,11 @@ namespace Fizzi.Applications.Splitter.ViewModel
 
         public MainViewModel()
         {
+            //var defaultDisplayTemplate2 = new DisplayTemplate();
+            //defaultDisplayTemplate2.TemplateName = "<Default>";
+            //PersistanceManager.Instance.DisplayTemplates.Add(defaultDisplayTemplate2);
+            //PersistanceManager.Instance.DisplayTemplatesConfiguration.Save();
+
             if (Settings.Default.IsNewVersion)
             {
                 Settings.Default.Upgrade();
@@ -75,6 +82,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
                 Settings.Default.SkipKey = Key.PageDown;
                 Settings.Default.ResetKey = Key.End;
                 Settings.Default.PauseKey = Key.Pause;
+
                 Settings.Default.IsVeryFirstLoad = false;
                 Settings.Default.Save();
             }
@@ -94,7 +102,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
 
             LiveTimer = new Timer(30);
             SettingsViewModel = new SettingsViewModel(keyListener);
-            DisplaySettingsViewModel = new DisplaySettingsViewModel();
+            DisplaySettingsViewModel = new DisplayTemplatesViewModel(this);
 
             ResizeEnabled = false;
             ShowGoldSplits = true;
@@ -152,6 +160,17 @@ namespace Fizzi.Applications.Splitter.ViewModel
                 return splitChangedObs.StartWith(new EventPattern<SplitChange>(this, new SplitChange(SplitChange.ActionEnum.Reset, null, -1)));
             });
 
+            //Set up an observable of an observable which will be used to monitor changes in display template
+            var displayTemplateObs = fileChangedObs.Select(_ =>
+            {
+                if (CurrentFile == null) return Observable.Never<Unit>();
+
+                var templateChangedObs = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                    h => CurrentFile.PropertyChanged += h, h => CurrentFile.PropertyChanged -= h).Where(a => a.EventArgs.PropertyName == "DisplayTemplate");
+
+                return templateChangedObs.Select(_2 => Unit.Default).StartWith(Unit.Default);
+            });
+
             //Monitor when run changes and changes state in order to control live timer
             runStatusObs.Switch().Subscribe(_ =>
             {
@@ -205,10 +224,21 @@ namespace Fizzi.Applications.Splitter.ViewModel
                 }
             });
 
-            //Change display when a new file is loaded
+            //Change current run when a new file is loaded
             fileChangedObs.Subscribe(_ =>
             {
                 CurrentRun = new Run(CurrentFile.RunDefinition.Length);
+            });
+
+            //Force window to resize correctly when a new template is loaded
+            displayTemplateObs.Switch().Subscribe(_ =>
+            {
+                if (CurrentFile == null || CurrentFile.DisplayTemplate == null) return;
+
+                MainWindow.ForceChangeWindowSize(CurrentFile.DisplayTemplate.WindowHeight, CurrentFile.DisplayTemplate.WindowWidth);
+
+                //Keep DisplayTemplateViewModel synchronized with these changes.
+                DisplaySettingsViewModel.SelectedDisplayTemplate = CurrentFile.DisplayTemplate;
             });
         }
 

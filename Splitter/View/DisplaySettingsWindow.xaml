@@ -1,15 +1,121 @@
 ﻿<Window x:Class="Fizzi.Applications.Splitter.View.DisplaySettingsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:p="clr-namespace:Fizzi.Applications.Splitter.Properties"
+        xmlns:lview="clr-namespace:Fizzi.Applications.Splitter.View"
         Title="Fizzi's Split Timer Display Settings" Width="500"
         WindowStyle="ToolWindow" SizeToContent="Height">
+    <Window.Resources>
+        <lview:ObjectEqualityConverter x:Key="ObjectEqualityConv" />
+        
+        <DataTemplate x:Key="PanelConfigTemplate">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Border Thickness" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Border Corner Radius" />
+
+                <TextBox Grid.Row="0" Grid.Column="1" Margin="3" Text="{Binding BorderThickness, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding BorderCornerRadius, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         
         <TabControl Grid.Row="0" Margin="3">
+            <TabItem Header="Main">
+                <StackPanel>
+                    <GroupBox Margin="3" Header="Template">
+                        <StackPanel>
+                            <TextBlock Margin="3" TextWrapping="Wrap">
+                                In BananaSplits display settings are stored as templates. Select a template to load 
+                                all of the settings in that template.
+                            </TextBlock>
+
+                            <ComboBox Name="templateSelection" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.UserTemplates}"
+                                      DisplayMemberPath="TemplateName" SelectedItem="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate}" 
+                                      SelectionChanged="ComboBox_SelectionChanged" />
+                            
+                            <DockPanel>
+                                <Button DockPanel.Dock="Left" Margin="3" Content="Clone" Width="100" Command="{Binding DisplaySettingsViewModel.CloneTemplate}" />
+                                <Button DockPanel.Dock="Right" Margin="3" HorizontalAlignment="Right" Content="Delete" Width="100" Command="{Binding DisplaySettingsViewModel.RemoveTemplate}">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Value="True">
+                                                    <DataTrigger.Binding>
+                                                        <MultiBinding Converter="{StaticResource ObjectEqualityConv}">
+                                                            <Binding Path="DisplaySettingsViewModel.DefaultDisplayTemplate" />
+                                                            <Binding ElementName="templateSelection" Path="SelectedItem" />
+                                                        </MultiBinding>
+                                                    </DataTrigger.Binding>
+
+                                                    <Setter Property="IsEnabled" Value="false" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </DockPanel>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Margin="3" Header="Organizational">
+                        <StackPanel>
+                            <DockPanel>
+                                <TextBlock Margin="3" Text="Template Name" VerticalAlignment="Center" />
+                                <TextBox Margin="3" Text="{Binding ElementName=templateSelection, Path=SelectedItem.TemplateName}">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox">
+                                            <Style.Triggers>
+                                                <DataTrigger Value="True">
+                                                    <DataTrigger.Binding>
+                                                        <MultiBinding Converter="{StaticResource ObjectEqualityConv}">
+                                                            <Binding Path="DisplaySettingsViewModel.DefaultDisplayTemplate" />
+                                                            <Binding ElementName="templateSelection" Path="SelectedItem" />
+                                                        </MultiBinding>
+                                                    </DataTrigger.Binding>
+
+                                                    <Setter Property="IsEnabled" Value="false" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
+                            </DockPanel>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Margin="3" Header="Window">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Height" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Width" />
+
+                            <TextBox Grid.Row="0" Grid.Column="1" Margin="3" IsEnabled="False"  Text="{Binding ElementName=templateSelection, Path=SelectedItem.WindowHeight, UpdateSourceTrigger=PropertyChanged}" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Margin="3" IsEnabled="False" Text="{Binding ElementName=templateSelection, Path=SelectedItem.WindowWidth, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+                    </GroupBox>
+                </StackPanel>
+            </TabItem>
             <TabItem Header="Font">
                 <StackPanel>
                     <GroupBox Margin="3" Header="Main Font">
@@ -26,8 +132,8 @@
                             <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Family" />
                             <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Size" />
 
-                            <ComboBox Grid.Row="0" Grid.Column="1" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.AvailableFonts}" SelectedItem="{Binding CurrentFile.DisplaySettings.MainFont.Family}" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding CurrentFile.DisplaySettings.MainFont.Size, UpdateSourceTrigger=PropertyChanged}" />
+                            <ComboBox Grid.Row="0" Grid.Column="1" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.AvailableFonts}" SelectedItem="{Binding ElementName=templateSelection, Path=SelectedItem.MainFont.Family}" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding ElementName=templateSelection, Path=SelectedItem.MainFont.Size, UpdateSourceTrigger=PropertyChanged}" />
                         </Grid>
                     </GroupBox>
                     
@@ -45,8 +151,8 @@
                             <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Family" />
                             <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Size" />
 
-                            <ComboBox Grid.Row="0" Grid.Column="1" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.AvailableFonts}" SelectedItem="{Binding CurrentFile.DisplaySettings.HeaderFont.Family}" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding CurrentFile.DisplaySettings.HeaderFont.Size, UpdateSourceTrigger=PropertyChanged}" />
+                            <ComboBox Grid.Row="0" Grid.Column="1" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.AvailableFonts}" SelectedItem="{Binding ElementName=templateSelection, Path=SelectedItem.HeaderFont.Family}" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding ElementName=templateSelection, Path=SelectedItem.HeaderFont.Size, UpdateSourceTrigger=PropertyChanged}" />
                         </Grid>
                     </GroupBox>
                     
@@ -64,15 +170,33 @@
                             <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Family" />
                             <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Size" />
 
-                            <ComboBox Grid.Row="0" Grid.Column="1" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.AvailableFonts}" SelectedItem="{Binding CurrentFile.DisplaySettings.TimerFont.Family}" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding CurrentFile.DisplaySettings.TimerFont.Size, UpdateSourceTrigger=PropertyChanged}" />
+                            <ComboBox Grid.Row="0" Grid.Column="1" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.AvailableFonts}" SelectedItem="{Binding ElementName=templateSelection, Path=SelectedItem.TimerFont.Family}" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding ElementName=templateSelection, Path=SelectedItem.TimerFont.Size, UpdateSourceTrigger=PropertyChanged}" />
                         </Grid>
                     </GroupBox>
                 </StackPanel>
             </TabItem>
+            <TabItem Header="Panels">
+                <StackPanel>
+                    <GroupBox Margin="3" Header="Default Panel" Content="{Binding ElementName=templateSelection, Path=SelectedItem.DefaultPanel}" 
+                              ContentTemplate="{StaticResource PanelConfigTemplate}" />
+                    <GroupBox Margin="3" Header="Current Split Panel" Content="{Binding ElementName=templateSelection, Path=SelectedItem.CurrentSplitPanel}" 
+                              ContentTemplate="{StaticResource PanelConfigTemplate}" />
+                    <GroupBox Margin="3" Header="Header Panel" Content="{Binding ElementName=templateSelection, Path=SelectedItem.HeaderPanel}" 
+                              ContentTemplate="{StaticResource PanelConfigTemplate}" />
+                </StackPanel>
+            </TabItem>
         </TabControl>
+
+        <TextBlock Grid.Row="1" Margin="3" TextWrapping="Wrap">
+            Hitting the save button will only save the template settings themselves. If 
+            you want to save the currently selected template as the default template for 
+            the current file, click save from the main window right-click menu.
+        </TextBlock>
         
-        <TextBlock Margin="3" TextWrapping="Wrap" Grid.Row="1"
-                   Text="In order to save your display settings, right click the main timer window and click save. Display settings are saved individually for each split file." />
+        <DockPanel Grid.Row="2">
+            <Button Margin="3" DockPanel.Dock="Left" Content="Save" Width="100" Click="SaveButton_Click" />
+            <Button Margin="3" DockPanel.Dock="Right" HorizontalAlignment="Right" Content="Cancel" Width="100" Click="CancelButton_Click" />
+        </DockPanel>
     </Grid>
 </Window>

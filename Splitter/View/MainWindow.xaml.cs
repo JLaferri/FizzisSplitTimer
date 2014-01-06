@@ -32,23 +32,7 @@ namespace Fizzi.Applications.Splitter.View
             {
                 if (e.PropertyName == "CurrentFile")
                 {
-                    var tempMinHeight = MinHeight;
-                    var tempMaxHeight = MaxHeight;
-
-                    MinHeight = mvm.CurrentFile.DisplaySettings.WindowHeight;
-                    MaxHeight = mvm.CurrentFile.DisplaySettings.WindowHeight;
-
-                    MinHeight = tempMinHeight;
-                    MaxHeight = tempMaxHeight;
-
-                    var tempMinWidth = MinWidth;
-                    var tempMaxWidth = MaxWidth;
-
-                    MinWidth = mvm.CurrentFile.DisplaySettings.WindowWidth;
-                    MaxWidth = mvm.CurrentFile.DisplaySettings.WindowWidth;
-
-                    MinWidth = tempMinWidth;
-                    MaxWidth = tempMaxWidth;
+                    ForceChangeWindowSize(mvm.CurrentFile.DisplayTemplate.WindowHeight, mvm.CurrentFile.DisplayTemplate.WindowWidth);
                 }
             };
 
@@ -56,6 +40,27 @@ namespace Fizzi.Applications.Splitter.View
             {
                 mvm.CheckMergeSuggested();      
             };
+        }
+
+        public void ForceChangeWindowSize(double height, double width)
+        {
+            var tempMinHeight = MinHeight;
+            var tempMaxHeight = MaxHeight;
+
+            MinHeight = height;
+            MaxHeight = height;
+
+            MinHeight = tempMinHeight;
+            MaxHeight = tempMaxHeight;
+
+            var tempMinWidth = MinWidth;
+            var tempMaxWidth = MaxWidth;
+
+            MinWidth = width;
+            MaxWidth = width;
+
+            MinWidth = tempMinWidth;
+            MaxWidth = tempMaxWidth;
         }
 
         private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
