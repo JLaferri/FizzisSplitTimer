@@ -6,6 +6,7 @@ using Fizzi.Windows.FontDialog;
 using System.ComponentModel;
 using System.Configuration;
 using Fizzi.Applications.Splitter.Common;
+using System.Windows.Media;
 
 namespace Fizzi.Applications.Splitter.Model
 {
@@ -144,6 +145,20 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [ConfigurationProperty("BackgroundColor", DefaultValue="Black")]
+        public string BackgroundColor
+        {
+            get { return (string)this["BackgroundColor"]; }
+            set
+            {
+                if (BackgroundColor != value)
+                {
+                    this["BackgroundColor"] = value;
+                    this.Raise("BackgroundColor", PropertyChanged);
+                }
+            }
+        }
+
         public DisplayTemplate()
         {
             TemplateId = Guid.NewGuid();
@@ -162,6 +177,8 @@ namespace Fizzi.Applications.Splitter.Model
             CurrentSplitPanel = new DisplayPanelTemplate();
             CurrentSplitPanel.BorderCornerRadius = 4;
             HeaderPanel = new DisplayPanelTemplate();
+
+            BackgroundColor = "Black";
         }
 
         public DisplayTemplate Clone()
@@ -209,6 +226,8 @@ namespace Fizzi.Applications.Splitter.Model
                 BorderThickness = HeaderPanel.BorderThickness
             };
 
+            newDisplayTemplate.BackgroundColor = BackgroundColor;
+
             return newDisplayTemplate;
         }
 
@@ -250,6 +269,8 @@ namespace Fizzi.Applications.Splitter.Model
 
             HeaderPanel.BorderCornerRadius = EditingBackup.HeaderPanel.BorderCornerRadius;
             HeaderPanel.BorderThickness = EditingBackup.HeaderPanel.BorderThickness;
+
+            BackgroundColor = EditingBackup.BackgroundColor;
 
             EditingBackup = null;
         }

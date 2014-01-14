@@ -15,6 +15,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
     class DisplayTemplatesViewModel : INotifyPropertyChanged
     {
         public string[] AvailableFonts { get; private set; }
+        public Dictionary<string, Color> AvailableColors { get; private set; }
 
         public ICommand CloneTemplate { get; private set; }
         public ICommand RemoveTemplate { get; private set; }
@@ -32,6 +33,10 @@ namespace Fizzi.Applications.Splitter.ViewModel
             this.mainViewModel = mainViewModel;
 
             AvailableFonts = Fonts.SystemFontFamilies.Select(ff => ff.ToString()).OrderBy(s => s).ToArray();
+            
+            var conv = new BrushConverter();
+            AvailableColors = typeof(Colors).GetProperties().Select(p => new { Name = p.Name, Color = conv.ConvertFromString(p.Name) })
+                .Where(a => a.Color is SolidColorBrush).ToDictionary(a => a.Name, a => ((SolidColorBrush)a.Color).Color);
 
             UserTemplates = PersistenceManager.Instance.DisplayTemplates;
             DefaultDisplayTemplate = UserTemplates.FirstOrDefault();

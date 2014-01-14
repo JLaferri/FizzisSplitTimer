@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:p="clr-namespace:Fizzi.Applications.Splitter.Properties"
         xmlns:lview="clr-namespace:Fizzi.Applications.Splitter.View"
-        Title="Fizzi's Split Timer Display Settings" Width="500"
-        WindowStyle="ToolWindow" SizeToContent="Height">
+        Title="Fizzi's Split Timer Display Settings" Width="550" Height="450"
+        WindowStyle="ToolWindow">
     <Window.Resources>
         <lview:ObjectEqualityConverter x:Key="ObjectEqualityConv" />
         
@@ -36,155 +36,214 @@
         
         <TabControl Grid.Row="0" Margin="3">
             <TabItem Header="Main">
-                <StackPanel>
-                    <GroupBox Margin="3" Header="Template">
-                        <StackPanel>
-                            <TextBlock Margin="3" TextWrapping="Wrap">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+                        <GroupBox Margin="3" Header="Template">
+                            <StackPanel>
+                                <TextBlock Margin="3" TextWrapping="Wrap">
                                 In BananaSplits display settings are stored as templates. Select a template to load 
                                 all of the settings in that template.
-                            </TextBlock>
+                                </TextBlock>
 
-                            <ComboBox Name="templateSelection" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.UserTemplates}"
+                                <ComboBox Name="templateSelection" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.UserTemplates}"
                                       DisplayMemberPath="TemplateName" SelectedItem="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate}" 
                                       SelectionChanged="ComboBox_SelectionChanged" />
+
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Left" Margin="3" Content="Clone" Width="100" Command="{Binding DisplaySettingsViewModel.CloneTemplate}" />
+                                    <Button DockPanel.Dock="Right" Margin="3" HorizontalAlignment="Right" Content="Delete" Width="100" Command="{Binding DisplaySettingsViewModel.RemoveTemplate}">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Style.Triggers>
+                                                    <DataTrigger Value="True">
+                                                        <DataTrigger.Binding>
+                                                            <MultiBinding Converter="{StaticResource ObjectEqualityConv}">
+                                                                <Binding Path="DisplaySettingsViewModel.DefaultDisplayTemplate" />
+                                                                <Binding ElementName="templateSelection" Path="SelectedItem" />
+                                                            </MultiBinding>
+                                                        </DataTrigger.Binding>
+
+                                                        <Setter Property="IsEnabled" Value="false" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </DockPanel>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Margin="3" Header="Organizational">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock Margin="3" Text="Template Name" VerticalAlignment="Center" />
+                                    <TextBox Margin="3" Text="{Binding ElementName=templateSelection, Path=SelectedItem.TemplateName}">
+                                        <TextBox.Style>
+                                            <Style TargetType="TextBox">
+                                                <Style.Triggers>
+                                                    <DataTrigger Value="True">
+                                                        <DataTrigger.Binding>
+                                                            <MultiBinding Converter="{StaticResource ObjectEqualityConv}">
+                                                                <Binding Path="DisplaySettingsViewModel.DefaultDisplayTemplate" />
+                                                                <Binding ElementName="templateSelection" Path="SelectedItem" />
+                                                            </MultiBinding>
+                                                        </DataTrigger.Binding>
+
+                                                        <Setter Property="IsEnabled" Value="false" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBox.Style>
+                                    </TextBox>
+                                </DockPanel>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Margin="3" Header="Window">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Height" />
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Width" />
+
+                                    <TextBox Grid.Row="0" Grid.Column="1" Margin="3" Text="{Binding ElementName=templateSelection, Path=SelectedItem.WindowHeight, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding ElementName=templateSelection, Path=SelectedItem.WindowWidth, UpdateSourceTrigger=PropertyChanged}" />
+                                </Grid>
+                                
+                                <Button Margin="3" Content="Resize With Mouse" Width="200" Click="ResizeButton_Click" />
+                            </StackPanel>
                             
-                            <DockPanel>
-                                <Button DockPanel.Dock="Left" Margin="3" Content="Clone" Width="100" Command="{Binding DisplaySettingsViewModel.CloneTemplate}" />
-                                <Button DockPanel.Dock="Right" Margin="3" HorizontalAlignment="Right" Content="Delete" Width="100" Command="{Binding DisplaySettingsViewModel.RemoveTemplate}">
-                                    <Button.Style>
-                                        <Style TargetType="Button">
-                                            <Style.Triggers>
-                                                <DataTrigger Value="True">
-                                                    <DataTrigger.Binding>
-                                                        <MultiBinding Converter="{StaticResource ObjectEqualityConv}">
-                                                            <Binding Path="DisplaySettingsViewModel.DefaultDisplayTemplate" />
-                                                            <Binding ElementName="templateSelection" Path="SelectedItem" />
-                                                        </MultiBinding>
-                                                    </DataTrigger.Binding>
-
-                                                    <Setter Property="IsEnabled" Value="false" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                </Button>
-                            </DockPanel>
-                        </StackPanel>
-                    </GroupBox>
-                    <GroupBox Margin="3" Header="Organizational">
-                        <StackPanel>
-                            <DockPanel>
-                                <TextBlock Margin="3" Text="Template Name" VerticalAlignment="Center" />
-                                <TextBox Margin="3" Text="{Binding ElementName=templateSelection, Path=SelectedItem.TemplateName}">
-                                    <TextBox.Style>
-                                        <Style TargetType="TextBox">
-                                            <Style.Triggers>
-                                                <DataTrigger Value="True">
-                                                    <DataTrigger.Binding>
-                                                        <MultiBinding Converter="{StaticResource ObjectEqualityConv}">
-                                                            <Binding Path="DisplaySettingsViewModel.DefaultDisplayTemplate" />
-                                                            <Binding ElementName="templateSelection" Path="SelectedItem" />
-                                                        </MultiBinding>
-                                                    </DataTrigger.Binding>
-
-                                                    <Setter Property="IsEnabled" Value="false" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBox.Style>
-                                </TextBox>
-                            </DockPanel>
-                        </StackPanel>
-                    </GroupBox>
-                    <GroupBox Margin="3" Header="Window">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Height" />
-                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Width" />
-
-                            <TextBox Grid.Row="0" Grid.Column="1" Margin="3" IsEnabled="False"  Text="{Binding ElementName=templateSelection, Path=SelectedItem.WindowHeight, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Margin="3" IsEnabled="False" Text="{Binding ElementName=templateSelection, Path=SelectedItem.WindowWidth, UpdateSourceTrigger=PropertyChanged}" />
-                        </Grid>
-                    </GroupBox>
-                </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="Font">
-                <StackPanel>
-                    <GroupBox Margin="3" Header="Main Font">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+                        <GroupBox Margin="3" Header="Main Font">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
                             
-                            <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Family" />
-                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Size" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Family" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Size" />
 
-                            <ComboBox Grid.Row="0" Grid.Column="1" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.AvailableFonts}" SelectedItem="{Binding ElementName=templateSelection, Path=SelectedItem.MainFont.Family}" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding ElementName=templateSelection, Path=SelectedItem.MainFont.Size, UpdateSourceTrigger=PropertyChanged}" />
-                        </Grid>
-                    </GroupBox>
+                                <ComboBox Grid.Row="0" Grid.Column="1" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.AvailableFonts}" SelectedItem="{Binding ElementName=templateSelection, Path=SelectedItem.MainFont.Family}" />
+                                <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding ElementName=templateSelection, Path=SelectedItem.MainFont.Size, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                        </GroupBox>
                     
-                    <GroupBox Margin="3" Header="Header Font">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                        <GroupBox Margin="3" Header="Header Font">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Family" />
-                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Size" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Family" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Size" />
 
-                            <ComboBox Grid.Row="0" Grid.Column="1" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.AvailableFonts}" SelectedItem="{Binding ElementName=templateSelection, Path=SelectedItem.HeaderFont.Family}" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding ElementName=templateSelection, Path=SelectedItem.HeaderFont.Size, UpdateSourceTrigger=PropertyChanged}" />
-                        </Grid>
-                    </GroupBox>
+                                <ComboBox Grid.Row="0" Grid.Column="1" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.AvailableFonts}" SelectedItem="{Binding ElementName=templateSelection, Path=SelectedItem.HeaderFont.Family}" />
+                                <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding ElementName=templateSelection, Path=SelectedItem.HeaderFont.Size, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                        </GroupBox>
                     
-                    <GroupBox Margin="3" Header="Timer Font">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                        <GroupBox Margin="3" Header="Timer Font">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Family" />
-                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Size" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Family" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="Font Size" />
 
-                            <ComboBox Grid.Row="0" Grid.Column="1" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.AvailableFonts}" SelectedItem="{Binding ElementName=templateSelection, Path=SelectedItem.TimerFont.Family}" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding ElementName=templateSelection, Path=SelectedItem.TimerFont.Size, UpdateSourceTrigger=PropertyChanged}" />
-                        </Grid>
-                    </GroupBox>
-                </StackPanel>
+                                <ComboBox Grid.Row="0" Grid.Column="1" Margin="3" ItemsSource="{Binding DisplaySettingsViewModel.AvailableFonts}" SelectedItem="{Binding ElementName=templateSelection, Path=SelectedItem.TimerFont.Family}" />
+                                <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding ElementName=templateSelection, Path=SelectedItem.TimerFont.Size, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Colors">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="170" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <ScrollViewer Grid.Column="0">
+                        <ItemsControl ItemsSource="{Binding DisplaySettingsViewModel.AvailableColors}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <DockPanel>
+                                        <Border Margin="3" Height="20" Width="20">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding Value}" />
+                                            </Border.Background>
+                                        </Border>
+                                        <TextBlock Margin="3" VerticalAlignment="Center" Text="{Binding Key}" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel>
+                            <TextBlock Margin="3" TextWrapping="Wrap">
+                            Enter either hex color codes with format #AARRGGBB or #RRGGBB, or the name of a color shown left.
+                            </TextBlock>
+                            <GroupBox Margin="3" Header="Static Colors">
+                                <DockPanel>
+                                    <TextBlock Margin="3" Text="Background Color: " VerticalAlignment="Center" />
+
+                                    <Border Margin="3" VerticalAlignment="Center" Height="20" Width="20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.BackgroundColor}" />
+                                        </Border.Background>
+                                    </Border>
+
+                                    <TextBox Margin="3" Text="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.BackgroundColor, UpdateSourceTrigger=PropertyChanged}" 
+                                        VerticalAlignment="Center" />
+                                </DockPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                    
+                </Grid>
             </TabItem>
             <TabItem Header="Panels">
-                <StackPanel>
-                    <GroupBox Margin="3" Header="Default Panel" Content="{Binding ElementName=templateSelection, Path=SelectedItem.DefaultPanel}" 
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+                        <GroupBox Margin="3" Header="Default Panel" Content="{Binding ElementName=templateSelection, Path=SelectedItem.DefaultPanel}" 
                               ContentTemplate="{StaticResource PanelConfigTemplate}" />
-                    <GroupBox Margin="3" Header="Current Split Panel" Content="{Binding ElementName=templateSelection, Path=SelectedItem.CurrentSplitPanel}" 
+                        <GroupBox Margin="3" Header="Current Split Panel" Content="{Binding ElementName=templateSelection, Path=SelectedItem.CurrentSplitPanel}" 
                               ContentTemplate="{StaticResource PanelConfigTemplate}" />
-                    <GroupBox Margin="3" Header="Header Panel" Content="{Binding ElementName=templateSelection, Path=SelectedItem.HeaderPanel}" 
+                        <GroupBox Margin="3" Header="Header Panel" Content="{Binding ElementName=templateSelection, Path=SelectedItem.HeaderPanel}" 
                               ContentTemplate="{StaticResource PanelConfigTemplate}" />
-                </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
 

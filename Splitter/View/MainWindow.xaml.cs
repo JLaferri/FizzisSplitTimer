@@ -49,6 +49,7 @@ namespace Fizzi.Applications.Splitter.View
 
             MinHeight = height;
             MaxHeight = height;
+            Height = height;
 
             MinHeight = tempMinHeight;
             MaxHeight = tempMaxHeight;
@@ -58,6 +59,7 @@ namespace Fizzi.Applications.Splitter.View
 
             MinWidth = width;
             MaxWidth = width;
+            Width = width;
 
             MinWidth = tempMinWidth;
             MaxWidth = tempMaxWidth;
@@ -91,6 +93,11 @@ namespace Fizzi.Applications.Splitter.View
         }
 
         private void DisplaySettingsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ShowDisplaySettingsDialog();
+        }
+
+        public void ShowDisplaySettingsDialog()
         {
             var mvm = (ViewModel.MainViewModel)DataContext;
 

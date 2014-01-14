@@ -150,7 +150,7 @@ namespace Fizzi.Applications.Splitter.Model
         public bool IsPersonalBest(Run latestRun)
         {
             //Check if this run was better than personal best
-            return latestRun.RunTime < PersonalBest.RunTime;
+            return latestRun.CompletedRunTime < PersonalBest.CompletedRunTime;
         }
 
         public static SplitFile Load(string path)

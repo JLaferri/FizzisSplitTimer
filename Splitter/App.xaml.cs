@@ -22,7 +22,6 @@ namespace Fizzi.Applications.Splitter
                 var mainWindow = new View.MainWindow();
                 MainWindow = mainWindow;
 
-                ((ViewModel.MainViewModel)MainWindow.DataContext).MainWindow = mainWindow;
                 disposableViewModel = MainWindow.DataContext as IDisposable;
 
                 MainWindow.Show();

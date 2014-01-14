@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.ComponentModel;
+using Fizzi.Applications.Splitter.ViewModel;
 
 namespace Fizzi.Applications.Splitter.View
 {
@@ -51,6 +52,14 @@ namespace Fizzi.Applications.Splitter.View
 
             if (oldSelection != null) oldSelection.CancelEdit();
             if (newSelection != null) newSelection.BeginEdit();
+        }
+
+        private void ResizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            var mvm = (MainViewModel)DataContext;
+
+            mvm.BeginResize();
+            Close();
         }
     }
 }

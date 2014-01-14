@@ -38,6 +38,34 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [ConfigurationProperty("BackgroundColor", DefaultValue = "#303030")]
+        public string BackgroundColor
+        {
+            get { return (string)this["BackgroundColor"]; }
+            set
+            {
+                if (BackgroundColor != value)
+                {
+                    this["BackgroundColor"] = value;
+                    this.Raise("BackgroundColor", PropertyChanged);
+                }
+            }
+        }
+
+        [ConfigurationProperty("BorderColor", DefaultValue = "White")]
+        public string BorderColor
+        {
+            get { return (string)this["BorderColor"]; }
+            set
+            {
+                if (BorderColor != value)
+                {
+                    this["BorderColor"] = value;
+                    this.Raise("BorderColor", PropertyChanged);
+                }
+            }
+        }
+
         public DisplayPanelTemplate()
         {
             BorderThickness = 2;

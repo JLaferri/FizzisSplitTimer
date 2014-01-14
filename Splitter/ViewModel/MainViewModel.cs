@@ -42,8 +42,14 @@ namespace Fizzi.Applications.Splitter.ViewModel
         public ICommand OpenFileCommand { get; private set; }
         public ICommand ImportFromWsplitCommand { get; private set; }
 
+        public ICommand AcceptResizeCommand { get; private set; }
+        public ICommand CancelResizeCommand { get; private set; }
+
         private bool _resizeEnabled;
         public bool ResizeEnabled { get { return _resizeEnabled; } set { this.RaiseAndSetIfChanged("ResizeEnabled", ref _resizeEnabled, value, PropertyChanged); } }
+
+        private bool _isResizing;
+        public bool IsResizing { get { return _isResizing; } private set { this.RaiseAndSetIfChanged("IsResizing", ref _isResizing, value, PropertyChanged); } }
 
         private bool _showGoldSplits;
         public bool ShowGoldSplits { get { return _showGoldSplits; } set { this.RaiseAndSetIfChanged("ShowGoldSplits", ref _showGoldSplits, value, PropertyChanged); } }
@@ -53,10 +59,12 @@ namespace Fizzi.Applications.Splitter.ViewModel
 
         public bool SettingsWindowOpen { get; set; }
 
+        private double resizeStartWidth, resizeStartHeight;
+
         public SettingsViewModel SettingsViewModel { get; private set; }
         public DisplayTemplatesViewModel DisplaySettingsViewModel { get; private set; }
 
-        public View.MainWindow MainWindow { get; set; }
+        public View.MainWindow MainWindow { get; private set; }
 
         private KeyboardListener keyListener = new KeyboardListener();
 
@@ -66,6 +74,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
             //defaultDisplayTemplate2.TemplateName = "<Default>";
             //PersistanceManager.Instance.DisplayTemplates.Add(defaultDisplayTemplate2);
             //PersistanceManager.Instance.DisplayTemplatesConfiguration.Save();
+            MainWindow = (View.MainWindow)Application.Current.MainWindow;
 
             if (Settings.Default.IsNewVersion)
             {
@@ -127,6 +136,8 @@ namespace Fizzi.Applications.Splitter.ViewModel
             ImportFromWsplitCommand = Command.Create(() => true, ImportFromWsplit);
             SaveSplits = Command.Create(() => true, SaveCurrentFile);
             SaveSplitsAs = Command.Create(() => true, SaveCurrentFileAs);
+            AcceptResizeCommand = Command.Create(() => true, AcceptResize);
+            CancelResizeCommand = Command.Create(() => true, CancelResize);
 
             //Set up observable which monitors changes in the current run
             var runChangedObs = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
@@ -137,6 +148,11 @@ namespace Fizzi.Applications.Splitter.ViewModel
             var fileChangedObs = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
                 h => PropertyChanged += h, h => PropertyChanged -= h).Where(a => a.EventArgs.PropertyName == "CurrentFile")
                 .Publish().RefCount();
+
+            //Set up observable which monitors changes in the display template
+            var displayTemplateObs = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                h => DisplaySettingsViewModel.PropertyChanged += h, h => DisplaySettingsViewModel.PropertyChanged -= h)
+                .Where(a => a.EventArgs.PropertyName == "SelectedDisplayTemplate").Publish().RefCount();
 
             //Set up an observable of an observable which will be used to monitor changes in run status
             var runStatusObs = runChangedObs.Select(_ =>
@@ -161,7 +177,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
             });
 
             //Set up an observable of an observable which will be used to monitor changes in display template
-            var displayTemplateObs = fileChangedObs.Select(_ =>
+            var fileDisplayTemplateObs = fileChangedObs.Select(_ =>
             {
                 if (CurrentFile == null) return Observable.Never<Unit>();
 
@@ -169,6 +185,20 @@ namespace Fizzi.Applications.Splitter.ViewModel
                     h => CurrentFile.PropertyChanged += h, h => CurrentFile.PropertyChanged -= h).Where(a => a.EventArgs.PropertyName == "DisplayTemplate");
 
                 return templateChangedObs.Select(_2 => Unit.Default).StartWith(Unit.Default);
+            });
+
+            //Set up an observable of an observable which will be used to monitor changes in window size
+            var windowSizeObs = displayTemplateObs.Select(_ => Unit.Default).StartWith(Unit.Default).Select(_ =>
+            {
+                if (DisplaySettingsViewModel == null || DisplaySettingsViewModel.SelectedDisplayTemplate == null) return Observable.Never<Unit>();
+
+                var selectedDisplay = DisplaySettingsViewModel.SelectedDisplayTemplate;
+
+                var sizeChangedObs = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                    h => selectedDisplay.PropertyChanged += h, h => selectedDisplay.PropertyChanged -= h)
+                    .Where(a => a.EventArgs.PropertyName == "WindowWidth" || a.EventArgs.PropertyName == "WindowHeight");
+
+                return sizeChangedObs.Select(_2 => Unit.Default).StartWith(Unit.Default);
             });
 
             //Monitor when run changes and changes state in order to control live timer
@@ -181,7 +211,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
                 }
                 else if (CurrentRun.IsCompleted)
                 {
-                    LiveTimer.Stop(CurrentRun.RunTime);
+                    LiveTimer.Stop(CurrentRun.CompletedRunTime);
                 }
                 else if (CurrentRun.IsStarted)
                 {
@@ -191,7 +221,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
                         CurrentSplitRow = SplitRows[0];
                     }
 
-                    LiveTimer.Start(CurrentRun.StartTime);
+                    LiveTimer.Start(CurrentRun);
                 }
             });
 
@@ -231,15 +261,46 @@ namespace Fizzi.Applications.Splitter.ViewModel
             });
 
             //Force window to resize correctly when a new template is loaded
-            displayTemplateObs.Switch().Subscribe(_ =>
+            windowSizeObs.Switch().Subscribe(_ =>
+            {
+                if (DisplaySettingsViewModel == null || DisplaySettingsViewModel.SelectedDisplayTemplate == null) return;
+
+                MainWindow.ForceChangeWindowSize(DisplaySettingsViewModel.SelectedDisplayTemplate.WindowHeight, 
+                    DisplaySettingsViewModel.SelectedDisplayTemplate.WindowWidth);
+            });
+
+            //Keep DisplayTemplateViewModel synchronized with these changes.
+            fileDisplayTemplateObs.Switch().Subscribe(_ =>
             {
                 if (CurrentFile == null || CurrentFile.DisplayTemplate == null) return;
-
-                MainWindow.ForceChangeWindowSize(CurrentFile.DisplayTemplate.WindowHeight, CurrentFile.DisplayTemplate.WindowWidth);
-
-                //Keep DisplayTemplateViewModel synchronized with these changes.
+                
                 DisplaySettingsViewModel.SelectedDisplayTemplate = CurrentFile.DisplayTemplate;
             });
+        }
+
+        public void BeginResize()
+        {
+            IsResizing = true;
+
+            resizeStartHeight = DisplaySettingsViewModel.SelectedDisplayTemplate.WindowHeight;
+            resizeStartWidth = DisplaySettingsViewModel.SelectedDisplayTemplate.WindowWidth;
+        }
+
+        public void AcceptResize()
+        {
+            IsResizing = false;
+
+            MainWindow.ShowDisplaySettingsDialog();
+        }
+
+        public void CancelResize()
+        {
+            IsResizing = false;
+
+            DisplaySettingsViewModel.SelectedDisplayTemplate.WindowHeight = resizeStartHeight;
+            DisplaySettingsViewModel.SelectedDisplayTemplate.WindowWidth = resizeStartWidth;
+
+            MainWindow.ShowDisplaySettingsDialog();
         }
 
         public void ImportFromWsplit()

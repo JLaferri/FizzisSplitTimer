@@ -20,8 +20,6 @@ namespace Fizzi.Applications.Splitter.Model
         public TimeSpan Time { get; private set; }
         public TimeSpan OverrideTime { get; private set; }
 
-        public DateTime LatestReferenceTime { get; private set; }
-
         private IObservable<long> frequencyObservable;
         private IDisposable subscription;
 
@@ -43,13 +41,11 @@ namespace Fizzi.Applications.Splitter.Model
             setOverrideTimer(stopTime);
         }
 
-        public void Start(DateTime referenceTime)
+        public void Start(Run run)
         {
-            LatestReferenceTime = referenceTime;
-
             if (subscription != null) subscription.Dispose();
             clearOverrideTimer();
-            subscription = frequencyObservable.Subscribe(_ => setTimer(DateTime.Now.Subtract(LatestReferenceTime)));
+            subscription = frequencyObservable.Subscribe(_ => setTimer(run.TimeSinceStart));
         }
 
         private void setTimer(TimeSpan time)

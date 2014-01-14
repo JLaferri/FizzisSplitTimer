@@ -15,13 +15,13 @@ namespace Fizzi.Applications.Splitter.Model
         public Split[] Splits { get; private set; }
 
         public bool IsStarted { get; private set; }
-        public bool IsPaused { get { return PauseTime != null; } }
+        //public bool IsPaused { get { return PauseTime != null; } }
         public bool IsCompleted { get { return CurrentSplit >= Splits.Length; } }
 
-        public DateTime? PauseTime { get; private set; }
+        //public DateTime? PauseTime { get; private set; }
         public DateTime StartTime { get; private set; }
 
-        public TimeSpan RunTime
+        public TimeSpan CompletedRunTime
         {
             get
             {
@@ -33,6 +33,10 @@ namespace Fizzi.Applications.Splitter.Model
                 return finalSplit.TimeFromRunStart;
             }
         }
+
+        public TimeSpan TimeSinceStart { get { return stopwatch.Elapsed; } }
+
+        public System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
         public Run(int splitCount)
         {
@@ -58,6 +62,8 @@ namespace Fizzi.Applications.Splitter.Model
             if (!IsStarted)
             {
                 //If run has not yet started - start it now
+                stopwatch.Start();
+
                 StartTime = DateTime.Now;
                 IsStarted = true;
                 OnRunStatusChanged();
@@ -65,7 +71,7 @@ namespace Fizzi.Applications.Splitter.Model
             else if (!IsCompleted)
             {
                 //If first split already exists, add this split to the end
-                var timeSinceStart = DateTime.Now.Subtract(StartTime);
+                var timeSinceStart = TimeSinceStart; //fetch the time for this split before doing any other computing
 
                 var timeToLastSplit = Splits.Take(CurrentSplit).Aggregate(new TimeSpan(), (accu, s) => accu.Add(s.Time));
                 var timeSinceLastSplit = timeSinceStart.Subtract(timeToLastSplit);
@@ -86,7 +92,7 @@ namespace Fizzi.Applications.Splitter.Model
 
             if (IsStarted && CurrentSplit < (Splits.Length - 1))
             {
-                var timeSinceStart = DateTime.Now.Subtract(StartTime);
+                var timeSinceStart = TimeSinceStart; //fetch the time before doing any other computing
 
                 var timeToLastSplit = Splits.Take(CurrentSplit).Aggregate(new TimeSpan(), (accu, s) => accu.Add(s.Time));
                 var timeSinceLastSplit = timeSinceStart.Subtract(timeToLastSplit);
