@@ -84,9 +84,11 @@
                     <GroupBox Margin="3" Header="Application">
                         <StackPanel>
                             <CheckBox Margin="3" IsChecked="{Binding Source={x:Static p:Settings.Default}, Path=AllowsTransparency}"
-                                  Content="Show Manual Window Resize Option (Requires Restart)" />
-                            <TextBlock Margin="3" Text="Note: In order to display the application in OBS using Window Capture (Aero Mode, No Overlapped), this option must be disabled. Similar behaviour may be found using other streaming applications."
-                                       TextWrapping="Wrap" />
+                                  Content="Borderless Display During Mouse Window Resize (Requires Restart)" />
+                            <TextBlock Margin="3" TextWrapping="Wrap">
+                                Note: Having this option on will display the window as borderless while resizing. The downside is that if this option is left on, 
+                                disabling Aero Mode and capturing overlayed windows will be required in order to display the window on stream.
+                            </TextBlock>
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>

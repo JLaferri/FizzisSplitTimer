@@ -145,6 +145,48 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [ConfigurationProperty("GoldPanel", IsRequired = true, IsKey = false)]
+        public DisplayPanelTemplate GoldPanel
+        {
+            get { return (DisplayPanelTemplate)this["GoldPanel"]; }
+            set
+            {
+                if (GoldPanel != value)
+                {
+                    this["GoldPanel"] = value;
+                    this.Raise("GoldPanel", PropertyChanged);
+                }
+            }
+        }
+
+        [ConfigurationProperty("AheadPanel", IsRequired = true, IsKey = false)]
+        public DisplayPanelTemplate AheadPanel
+        {
+            get { return (DisplayPanelTemplate)this["AheadPanel"]; }
+            set
+            {
+                if (AheadPanel != value)
+                {
+                    this["AheadPanel"] = value;
+                    this.Raise("AheadPanel", PropertyChanged);
+                }
+            }
+        }
+
+        [ConfigurationProperty("BehindPanel", IsRequired = true, IsKey = false)]
+        public DisplayPanelTemplate BehindPanel
+        {
+            get { return (DisplayPanelTemplate)this["BehindPanel"]; }
+            set
+            {
+                if (BehindPanel != value)
+                {
+                    this["BehindPanel"] = value;
+                    this.Raise("BehindPanel", PropertyChanged);
+                }
+            }
+        }
+
         [ConfigurationProperty("BackgroundColor", DefaultValue="Black")]
         public string BackgroundColor
         {
@@ -159,7 +201,21 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
-        public DisplayTemplate()
+        [ConfigurationProperty("TimerColor", DefaultValue = "White")]
+        public string TimerColor
+        {
+            get { return (string)this["TimerColor"]; }
+            set
+            {
+                if (TimerColor != value)
+                {
+                    this["TimerColor"] = value;
+                    this.Raise("TimerColor", PropertyChanged);
+                }
+            }
+        }
+
+        protected override void InitializeDefault()
         {
             TemplateId = Guid.NewGuid();
 
@@ -178,7 +234,20 @@ namespace Fizzi.Applications.Splitter.Model
             CurrentSplitPanel.BorderCornerRadius = 4;
             HeaderPanel = new DisplayPanelTemplate();
 
+            GoldPanel = new DisplayPanelTemplate();
+            GoldPanel.BorderColor = "Gold";
+            AheadPanel = new DisplayPanelTemplate();
+            AheadPanel.BorderColor = "LimeGreen";
+            BehindPanel = new DisplayPanelTemplate();
+            BehindPanel.BorderColor = "Red";
+
             BackgroundColor = "Black";
+            TimerColor = "White";
+        }
+
+        public DisplayTemplate()
+        {
+            InitializeDefault();
         }
 
         public DisplayTemplate Clone()
@@ -211,22 +280,59 @@ namespace Fizzi.Applications.Splitter.Model
             newDisplayTemplate.DefaultPanel = new DisplayPanelTemplate()
             {
                 BorderCornerRadius = DefaultPanel.BorderCornerRadius,
-                BorderThickness = DefaultPanel.BorderThickness
+                BorderThickness = DefaultPanel.BorderThickness,
+                BackgroundColor = DefaultPanel.BackgroundColor,
+                BorderColor = DefaultPanel.BorderColor,
+                TextColor = DefaultPanel.TextColor
             };
 
             newDisplayTemplate.CurrentSplitPanel = new DisplayPanelTemplate()
             {
                 BorderCornerRadius = CurrentSplitPanel.BorderCornerRadius,
-                BorderThickness = CurrentSplitPanel.BorderThickness
+                BorderThickness = CurrentSplitPanel.BorderThickness,
+                BackgroundColor = CurrentSplitPanel.BackgroundColor,
+                BorderColor = CurrentSplitPanel.BorderColor,
+                TextColor = CurrentSplitPanel.TextColor
             };
 
             newDisplayTemplate.HeaderPanel = new DisplayPanelTemplate()
             {
                 BorderCornerRadius = HeaderPanel.BorderCornerRadius,
-                BorderThickness = HeaderPanel.BorderThickness
+                BorderThickness = HeaderPanel.BorderThickness,
+                BackgroundColor = HeaderPanel.BackgroundColor,
+                BorderColor = HeaderPanel.BorderColor,
+                TextColor = HeaderPanel.TextColor
+            };
+
+            newDisplayTemplate.GoldPanel = new DisplayPanelTemplate()
+            {
+                BorderCornerRadius = GoldPanel.BorderCornerRadius,
+                BorderThickness = GoldPanel.BorderThickness,
+                BackgroundColor = GoldPanel.BackgroundColor,
+                BorderColor = GoldPanel.BorderColor,
+                TextColor = GoldPanel.TextColor
+            };
+
+            newDisplayTemplate.AheadPanel = new DisplayPanelTemplate()
+            {
+                BorderCornerRadius = AheadPanel.BorderCornerRadius,
+                BorderThickness = AheadPanel.BorderThickness,
+                BackgroundColor = AheadPanel.BackgroundColor,
+                BorderColor = AheadPanel.BorderColor,
+                TextColor = AheadPanel.TextColor
+            };
+
+            newDisplayTemplate.BehindPanel = new DisplayPanelTemplate()
+            {
+                BorderCornerRadius = BehindPanel.BorderCornerRadius,
+                BorderThickness = BehindPanel.BorderThickness,
+                BackgroundColor = BehindPanel.BackgroundColor,
+                BorderColor = BehindPanel.BorderColor,
+                TextColor = BehindPanel.TextColor
             };
 
             newDisplayTemplate.BackgroundColor = BackgroundColor;
+            newDisplayTemplate.TimerColor = TimerColor;
 
             return newDisplayTemplate;
         }
@@ -263,14 +369,42 @@ namespace Fizzi.Applications.Splitter.Model
 
             DefaultPanel.BorderCornerRadius = EditingBackup.DefaultPanel.BorderCornerRadius;
             DefaultPanel.BorderThickness = EditingBackup.DefaultPanel.BorderThickness;
+            DefaultPanel.BackgroundColor = EditingBackup.DefaultPanel.BackgroundColor;
+            DefaultPanel.BorderColor = EditingBackup.DefaultPanel.BorderColor;
+            DefaultPanel.TextColor = EditingBackup.DefaultPanel.TextColor;
 
             CurrentSplitPanel.BorderCornerRadius = EditingBackup.CurrentSplitPanel.BorderCornerRadius;
             CurrentSplitPanel.BorderThickness = EditingBackup.CurrentSplitPanel.BorderThickness;
+            CurrentSplitPanel.BackgroundColor = EditingBackup.CurrentSplitPanel.BackgroundColor;
+            CurrentSplitPanel.BorderColor = EditingBackup.CurrentSplitPanel.BorderColor;
+            CurrentSplitPanel.TextColor = EditingBackup.CurrentSplitPanel.TextColor;
 
             HeaderPanel.BorderCornerRadius = EditingBackup.HeaderPanel.BorderCornerRadius;
             HeaderPanel.BorderThickness = EditingBackup.HeaderPanel.BorderThickness;
+            HeaderPanel.BackgroundColor = EditingBackup.HeaderPanel.BackgroundColor;
+            HeaderPanel.BorderColor = EditingBackup.HeaderPanel.BorderColor;
+            HeaderPanel.TextColor = EditingBackup.HeaderPanel.TextColor;
+
+            GoldPanel.BorderCornerRadius = EditingBackup.GoldPanel.BorderCornerRadius;
+            GoldPanel.BorderThickness = EditingBackup.GoldPanel.BorderThickness;
+            GoldPanel.BackgroundColor = EditingBackup.GoldPanel.BackgroundColor;
+            GoldPanel.BorderColor = EditingBackup.GoldPanel.BorderColor;
+            GoldPanel.TextColor = EditingBackup.GoldPanel.TextColor;
+
+            AheadPanel.BorderCornerRadius = EditingBackup.AheadPanel.BorderCornerRadius;
+            AheadPanel.BorderThickness = EditingBackup.AheadPanel.BorderThickness;
+            AheadPanel.BackgroundColor = EditingBackup.AheadPanel.BackgroundColor;
+            AheadPanel.BorderColor = EditingBackup.AheadPanel.BorderColor;
+            AheadPanel.TextColor = EditingBackup.AheadPanel.TextColor;
+
+            BehindPanel.BorderCornerRadius = EditingBackup.BehindPanel.BorderCornerRadius;
+            BehindPanel.BorderThickness = EditingBackup.BehindPanel.BorderThickness;
+            BehindPanel.BackgroundColor = EditingBackup.BehindPanel.BackgroundColor;
+            BehindPanel.BorderColor = EditingBackup.BehindPanel.BorderColor;
+            BehindPanel.TextColor = EditingBackup.BehindPanel.TextColor;
 
             BackgroundColor = EditingBackup.BackgroundColor;
+            TimerColor = EditingBackup.TimerColor;
 
             EditingBackup = null;
         }

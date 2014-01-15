@@ -7,8 +7,6 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         x:Name="MainWindowName"
         WindowStyle="None" AllowsTransparency="{Binding Source={x:Static p:Settings.Default}, Path=AllowsTransparency, Mode=OneTime}"
-        Height="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.WindowHeight, Mode=OneWayToSource, FallbackValue=400}"
-        Width="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.WindowWidth, Mode=OneWayToSource, FallbackValue=250}"
         MouseDown="Window_MouseDown" Title="Fizzi's Split Timer">
     <Window.DataContext>
         <lvm:MainViewModel />
@@ -28,7 +26,7 @@
         <SolidColorBrush x:Key="CurrentSplitBackgroundBrush" Color="#303030" />
         
         <Style x:Key="MainText" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.DefaultPanel.TextColor, FallbackValue=White}" />
             <Setter Property="FontSize" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.MainFont.Size, FallbackValue=14}" />
             <Setter Property="FontFamily" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.MainFont.Family, FallbackValue=Calibri}" />
         </Style>
@@ -48,9 +46,9 @@
         <Style x:Key="BorderStyle" TargetType="Border">
             <Setter Property="BorderThickness" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.DefaultPanel.BorderThickness, FallbackValue=2}" />
             <Setter Property="CornerRadius" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.DefaultPanel.BorderCornerRadius, FallbackValue=0}" />
-            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.DefaultPanel.BorderColor, FallbackValue=White}" />
+            <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.DefaultPanel.BackgroundColor, FallbackValue=#303030}" />
             <Setter Property="SnapsToDevicePixels" Value="true" />
-            <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
         </Style>
 
         <Style x:Key="DisabledWhenNoFile" TargetType="MenuItem">
@@ -104,11 +102,14 @@
             <!--RenderOptions.ClearTypeHint="Enabled" TextOptions.TextFormattingMode="Display" RenderOptions.BitmapScalingMode="NearestNeighbor"-->
 
             <Border Grid.Row="0" Margin="6,6,6,5" Style="{StaticResource BorderStyle}" 
-                BorderThickness="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.HeaderPanel.BorderThickness}"
-                CornerRadius="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.HeaderPanel.BorderCornerRadius}">
+                    BorderThickness="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.HeaderPanel.BorderThickness}"
+                    CornerRadius="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.HeaderPanel.BorderCornerRadius}"
+                    BorderBrush="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.HeaderPanel.BorderColor}"
+                    Background="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.HeaderPanel.BackgroundColor}">
                 <StackPanel>
                     <TextBlock Margin="3,1" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center"
-                           Text="{Binding CurrentFile.Header, FallbackValue=[File Not Loaded]}" Style="{StaticResource HeaderText}" />
+                               Text="{Binding CurrentFile.Header, FallbackValue=[File Not Loaded]}" Style="{StaticResource HeaderText}"
+                               Foreground="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.HeaderPanel.TextColor}" />
                     <!--<TextBlock Margin="3,1" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center"
                            Text="{Binding CurrentFile.PersonalBestDate, FallbackValue=N/A}" FontSize="14" FontFamily="PF Arma Five" />-->
                 </StackPanel>
@@ -126,7 +127,6 @@
                             <Border Grid.Column="0" Margin="1">
                                 <Border.Style>
                                     <Style TargetType="Border" BasedOn="{StaticResource BorderStyle}">
-                                        <Setter Property="BorderBrush" Value="White" />
                                         <Style.Triggers>
                                             <DataTrigger Value="True">
                                                 <DataTrigger.Binding>
@@ -136,47 +136,92 @@
                                                     </MultiBinding>
                                                 </DataTrigger.Binding>
 
-                                                <Setter Property="Background" Value="{StaticResource CurrentSplitBackgroundBrush}" />
+                                                <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.CurrentSplitPanel.BorderColor, FallbackValue=White}" />
+                                                <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.CurrentSplitPanel.BackgroundColor, FallbackValue=#303030}" />
                                                 <Setter Property="BorderThickness" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.CurrentSplitPanel.BorderThickness, FallbackValue=2}" />
-                                                <Setter Property="CornerRadius" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.CurrentSplitPanel.BorderCornerRadius, FallbackValue=0}" />
+                                                <Setter Property="CornerRadius" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.CurrentSplitPanel.BorderCornerRadius, FallbackValue=4}" />
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding IsNewGoldSplit}" Value="True">
-                                                <Setter Property="BorderBrush" Value="Gold" />
+                                                <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.GoldPanel.BorderColor, FallbackValue=White}" />
+                                                <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.GoldPanel.BackgroundColor, FallbackValue=#303030}" />
+                                                <!--<Setter Property="BorderThickness" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.GoldPanel.BorderThickness, FallbackValue=2}" />
+                                                <Setter Property="CornerRadius" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.GoldPanel.BorderCornerRadius, FallbackValue=0}" />-->
                                             </DataTrigger>
                                             <MultiDataTrigger>
                                                 <MultiDataTrigger.Conditions>
                                                     <Condition Binding="{Binding IsNewGoldSplit}" Value="False" />
                                                     <Condition Binding="{Binding IsAheadOfPb}" Value="True" />
                                                 </MultiDataTrigger.Conditions>
-                                                <Setter Property="BorderBrush" Value="LimeGreen" />
+                                                <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.AheadPanel.BorderColor, FallbackValue=White}" />
+                                                <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.AheadPanel.BackgroundColor, FallbackValue=#303030}" />
+                                                <!--<Setter Property="BorderThickness" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.AheadPanel.BorderThickness, FallbackValue=2}" />
+                                                <Setter Property="CornerRadius" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.AheadPanel.BorderCornerRadius, FallbackValue=0}" />-->
                                             </MultiDataTrigger>
                                             <MultiDataTrigger>
                                                 <MultiDataTrigger.Conditions>
                                                     <Condition Binding="{Binding IsNewGoldSplit}" Value="False" />
                                                     <Condition Binding="{Binding IsAheadOfPb}" Value="False" />
                                                 </MultiDataTrigger.Conditions>
-                                                <Setter Property="BorderBrush" Value="Red" />
+                                                <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.BehindPanel.BorderColor, FallbackValue=White}" />
+                                                <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.BehindPanel.BackgroundColor, FallbackValue=#303030}" />
+                                                <!--<Setter Property="BorderThickness" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.BehindPanel.BorderThickness, FallbackValue=2}" />
+                                                <Setter Property="CornerRadius" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.BehindPanel.BorderCornerRadius, FallbackValue=0}" />-->
                                             </MultiDataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
                                 <Grid>
+                                    <Grid.Resources>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource MainText}">
+                                            <Style.Triggers>
+                                                <DataTrigger Value="True">
+                                                    <DataTrigger.Binding>
+                                                        <MultiBinding Converter="{StaticResource ObjectEqualityConv}">
+                                                            <Binding />
+                                                            <Binding RelativeSource="{RelativeSource AncestorType=Window, Mode=FindAncestor}" Path="DataContext.CurrentSplitRow" />
+                                                        </MultiBinding>
+                                                    </DataTrigger.Binding>
+
+                                                    <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.CurrentSplitPanel.TextColor, FallbackValue=White}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsNewGoldSplit}" Value="True">
+                                                    <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.GoldPanel.TextColor, FallbackValue=White}" />
+                                                </DataTrigger>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding IsNewGoldSplit}" Value="False" />
+                                                        <Condition Binding="{Binding IsAheadOfPb}" Value="True" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.AheadPanel.TextColor, FallbackValue=White}" />
+                                                </MultiDataTrigger>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding IsNewGoldSplit}" Value="False" />
+                                                        <Condition Binding="{Binding IsAheadOfPb}" Value="False" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.BehindPanel.TextColor, FallbackValue=White}" />
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Resources>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock Grid.Column="0" Margin="3,1" TextAlignment="Left" VerticalAlignment="Center"
-                                       Text="{Binding Name}" Style="{StaticResource MainText}" />
+                                       Text="{Binding Name}" />
 
                                     <TextBlock Grid.Column="1" Margin="3,1" TextAlignment="Right" VerticalAlignment="Center"
-                                       Text="{Binding Display}" Style="{StaticResource MainText}" />
+                                       Text="{Binding Display}" />
                                 </Grid>
                             </Border>
 
-                            <Border Grid.Column="1" Margin="1" BorderBrush="Gold">
+                            <Border Grid.Column="1" Margin="1">
                                 <Border.Style>
                                     <Style TargetType="Border" BasedOn="{StaticResource BorderStyle}">
+                                        <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.GoldPanel.BorderColor, FallbackValue=White}" />
+                                        <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.GoldPanel.BackgroundColor, FallbackValue=#303030}" />
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.ShowGoldSplits}" Value="false">
                                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -187,8 +232,13 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Border.Style>
-                                <TextBlock Margin="3,1" TextAlignment="Center" VerticalAlignment="Center"
-                                       Text="{Binding GoldDisplay}" Style="{StaticResource MainText}" />
+                                <TextBlock Margin="3,1" TextAlignment="Center" VerticalAlignment="Center" Text="{Binding GoldDisplay}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource MainText}">
+                                            <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.GoldPanel.TextColor, FallbackValue=White}" />
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </Border>
                         </Grid>
 
@@ -205,21 +255,23 @@
                         </VisualBrush>
                     </Rectangle.Fill>
                 </Rectangle>-->
-                    <Border Margin="6,1" Height="3" Background="White" SnapsToDevicePixels="True" />
+                    <Border Margin="6,1" Height="3" SnapsToDevicePixels="True"
+                            Background="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=DataContext.DisplaySettingsViewModel.SelectedDisplayTemplate.DefaultPanel.BorderColor, FallbackValue=White}"/>
                 </lview:SplitViewer.SeparatorContent>
             </lview:SplitViewer>
 
-            <TextBlock Grid.Row="2" Margin="6,2,6,3" TextAlignment="Right" VerticalAlignment="Center" Foreground="White">
-            <TextBlock.Style>
-                <Style TargetType="TextBlock" BasedOn="{StaticResource TimerText}">
-                    <Setter Property="Text" Value="{Binding LiveTimer.OverrideTimeDisplay}" />
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding LiveTimer.OverrideTimeDisplay}" Value="{x:Null}">
-                            <Setter Property="Text" Value="{Binding LiveTimer.DisplayTimer}" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBlock.Style>
+            <TextBlock Grid.Row="2" Margin="6,2,6,3" TextAlignment="Right" VerticalAlignment="Center" 
+                       Foreground="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.TimerColor, FallbackValue=White}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource TimerText}">
+                        <Setter Property="Text" Value="{Binding LiveTimer.OverrideTimeDisplay}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding LiveTimer.OverrideTimeDisplay}" Value="{x:Null}">
+                                <Setter Property="Text" Value="{Binding LiveTimer.DisplayTimer}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
             </TextBlock>
 
             <Grid Grid.Row="3" Margin="3,3,3,6">
@@ -234,9 +286,12 @@
                            Text="{Binding PreviousSplitRow.PbOffsetDisplay}" Style="{StaticResource MainText}" />
                 </Border>
 
-                <Border Grid.Column="1" Margin="3,0,3,0" BorderBrush="Gold" Style="{StaticResource BorderStyle}">
+                <Border Grid.Column="1" Margin="3,0,3,0" Style="{StaticResource BorderStyle}"
+                        BorderBrush="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.GoldPanel.BorderColor}"
+                        Background="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.GoldPanel.BackgroundColor}">
                     <TextBlock Margin="3,1" HorizontalAlignment="Center" TextAlignment="Center" VerticalAlignment="Center"
-                           Text="{Binding PreviousSplitRow.GoldOffsetDisplay}" Style="{StaticResource MainText}" />
+                               Text="{Binding PreviousSplitRow.GoldOffsetDisplay}" Style="{StaticResource MainText}"
+                               Foreground="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.GoldPanel.TextColor}" />
                 </Border>
 
                 <Border Grid.Column="2" Margin="3,0,3,0" Visibility="Collapsed" Style="{StaticResource BorderStyle}">

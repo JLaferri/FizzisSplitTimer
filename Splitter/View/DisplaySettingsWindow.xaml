@@ -211,22 +211,116 @@
 
                     <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel>
+                            <StackPanel.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="SnapsToDevicePixels" Value="True" />
+                                </Style>
+                                <Style TargetType="ContentControl">
+                                    <Setter Property="ContentTemplate">
+                                        <Setter.Value>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+
+                                                    <TextBlock Grid.Column="0" Grid.Row="0" Margin="3" Text="Background Color: " VerticalAlignment="Center" />
+                                                    <Border Grid.Column="1" Grid.Row="0" Margin="3" VerticalAlignment="Center" Height="20" Width="20">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="{Binding BackgroundColor}" />
+                                                        </Border.Background>
+                                                    </Border>
+                                                    <TextBox Grid.Column="2" Grid.Row="0" Margin="3" Text="{Binding BackgroundColor, UpdateSourceTrigger=PropertyChanged}" 
+                                                         VerticalAlignment="Center" />
+
+                                                    <TextBlock Grid.Column="0" Grid.Row="1" Margin="3" Text="Border Color: " VerticalAlignment="Center" />
+                                                    <Border Grid.Column="1" Grid.Row="1" Margin="3" VerticalAlignment="Center" Height="20" Width="20">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="{Binding BorderColor}" />
+                                                        </Border.Background>
+                                                    </Border>
+                                                    <TextBox Grid.Column="2" Grid.Row="1" Margin="3" Text="{Binding BorderColor, UpdateSourceTrigger=PropertyChanged}" 
+                                                         VerticalAlignment="Center" />
+
+                                                    <TextBlock Grid.Column="0" Grid.Row="2" Margin="3" Text="Text Color: " VerticalAlignment="Center" />
+                                                    <Border Grid.Column="1" Grid.Row="2" Margin="3" VerticalAlignment="Center" Height="20" Width="20">
+                                                        <Border.Background>
+                                                            <SolidColorBrush Color="{Binding TextColor}" />
+                                                        </Border.Background>
+                                                    </Border>
+                                                    <TextBox Grid.Column="2" Grid.Row="2" Margin="3" Text="{Binding TextColor, UpdateSourceTrigger=PropertyChanged}" 
+                                                         VerticalAlignment="Center" />
+                                                </Grid>
+                                            </DataTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </StackPanel.Resources>
+                            
                             <TextBlock Margin="3" TextWrapping="Wrap">
                             Enter either hex color codes with format #AARRGGBB or #RRGGBB, or the name of a color shown left.
                             </TextBlock>
                             <GroupBox Margin="3" Header="Static Colors">
-                                <DockPanel>
-                                    <TextBlock Margin="3" Text="Background Color: " VerticalAlignment="Center" />
-
-                                    <Border Margin="3" VerticalAlignment="Center" Height="20" Width="20">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Margin="3" Text="Background Color: " VerticalAlignment="Center" />
+                                    <Border Grid.Column="1" Grid.Row="0" Margin="3" VerticalAlignment="Center" Height="20" Width="20">
                                         <Border.Background>
                                             <SolidColorBrush Color="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.BackgroundColor}" />
                                         </Border.Background>
                                     </Border>
-
-                                    <TextBox Margin="3" Text="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.BackgroundColor, UpdateSourceTrigger=PropertyChanged}" 
+                                    <TextBox Grid.Column="2" Grid.Row="0" Margin="3" Text="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.BackgroundColor, UpdateSourceTrigger=PropertyChanged}" 
                                         VerticalAlignment="Center" />
-                                </DockPanel>
+
+                                    <TextBlock Grid.Column="0" Grid.Row="1" Margin="3" Text="Timer Color: " VerticalAlignment="Center" />
+                                    <Border Grid.Column="1" Grid.Row="1" Margin="3" VerticalAlignment="Center" Height="20" Width="20">
+                                        <Border.Background>
+                                            <SolidColorBrush Color="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.TimerColor}" />
+                                        </Border.Background>
+                                    </Border>
+                                    <TextBox Grid.Column="2" Grid.Row="1" Margin="3" Text="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.TimerColor, UpdateSourceTrigger=PropertyChanged}" 
+                                        VerticalAlignment="Center" />
+                                </Grid>
+                            </GroupBox>
+                            
+                            <GroupBox Header="Default Panel Colors">
+                                <ContentControl Content="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.DefaultPanel}" />
+                            </GroupBox>
+
+                            <GroupBox Header="Header Panel Colors">
+                                <ContentControl Content="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.HeaderPanel}" />
+                            </GroupBox>
+
+                            <GroupBox Header="Current Panel Colors">
+                                <ContentControl Content="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.CurrentSplitPanel}" />
+                            </GroupBox>
+
+                            <GroupBox Header="Gold Panel Colors">
+                                <ContentControl Content="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.GoldPanel}" />
+                            </GroupBox>
+
+                            <GroupBox Header="Ahead Panel Colors">
+                                <ContentControl Content="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.AheadPanel}" />
+                            </GroupBox>
+
+                            <GroupBox Header="Behind Panel Colors">
+                                <ContentControl Content="{Binding DisplaySettingsViewModel.SelectedDisplayTemplate.BehindPanel}" />
                             </GroupBox>
                         </StackPanel>
                     </ScrollViewer>

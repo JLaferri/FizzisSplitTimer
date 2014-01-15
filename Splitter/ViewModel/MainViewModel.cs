@@ -59,8 +59,6 @@ namespace Fizzi.Applications.Splitter.ViewModel
 
         public bool SettingsWindowOpen { get; set; }
 
-        private double resizeStartWidth, resizeStartHeight;
-
         public SettingsViewModel SettingsViewModel { get; private set; }
         public DisplayTemplatesViewModel DisplaySettingsViewModel { get; private set; }
 
@@ -70,16 +68,50 @@ namespace Fizzi.Applications.Splitter.ViewModel
 
         public MainViewModel()
         {
-            //var defaultDisplayTemplate2 = new DisplayTemplate();
-            //defaultDisplayTemplate2.TemplateName = "<Default>";
-            //PersistanceManager.Instance.DisplayTemplates.Add(defaultDisplayTemplate2);
-            //PersistanceManager.Instance.DisplayTemplatesConfiguration.Save();
             MainWindow = (View.MainWindow)Application.Current.MainWindow;
 
             if (Settings.Default.IsNewVersion)
             {
                 Settings.Default.Upgrade();
+                var targetConfigPath = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
+
+                //Attempt to upgrade display templates
+                if (!string.IsNullOrWhiteSpace(Settings.Default.ConfigPath))
+                {
+                    //var exeConfig = (new Uri(System.Reflection.Assembly.GetExecutingAssembly().Location)).LocalPath;
+
+                    //var configFileMap = new ExeConfigurationFileMap(Settings.Default.ConfigPath);
+                    ////configFileMap.LocalUserConfigFilename = Settings.Default.ConfigPath;
+                    //configFileMap.RoamingUserConfigFilename = Settings.Default.ConfigPath;
+                    //configFileMap.ExeConfigFilename = System.IO.Path.ChangeExtension(exeConfig, ".config");
+
+                    ////ConfigurationFileMap map = new ConfigurationFileMap(Settings.Default.ConfigPath);
+                    ////var config = ConfigurationManager.OpenMappedMachineConfiguration(configFileMap);
+
+                    //var config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.PerUserRoaming);
+
+                    //var templatesConfigSection = config.GetSection("displayTemplates") as DisplayTemplatesConfigurationSection;
+
+                    //if (templatesConfigSection != null)
+                    //{
+                    //    foreach (var template in templatesConfigSection.DisplayTemplates.OfType<DisplayTemplate>().Skip(1))
+                    //    {
+                    //        PersistenceManager.Instance.DisplayTemplates.Add(template);
+                    //    }
+
+                    //    PersistenceManager.Instance.DisplayTemplatesConfiguration.Save();
+                    //}
+
+                    //Forcefully upgrade old DisplayTemplates by copying the old settings file over
+                    //I know that the Application Settings can be upgraded using the Upgrade method but I
+                    //can't seem to find how to do the same with configuration sections
+                    System.IO.File.Copy(Settings.Default.ConfigPath, targetConfigPath, true);
+                    Settings.Default.Reload();
+                }
+
+                Settings.Default.ConfigPath = targetConfigPath;
                 Settings.Default.IsNewVersion = false;
+
                 Settings.Default.Save();
             }
 
@@ -281,14 +313,14 @@ namespace Fizzi.Applications.Splitter.ViewModel
         public void BeginResize()
         {
             IsResizing = true;
-
-            resizeStartHeight = DisplaySettingsViewModel.SelectedDisplayTemplate.WindowHeight;
-            resizeStartWidth = DisplaySettingsViewModel.SelectedDisplayTemplate.WindowWidth;
         }
 
         public void AcceptResize()
         {
             IsResizing = false;
+
+            DisplaySettingsViewModel.SelectedDisplayTemplate.WindowHeight = MainWindow.ActualHeight;
+            DisplaySettingsViewModel.SelectedDisplayTemplate.WindowWidth = MainWindow.ActualWidth;
 
             MainWindow.ShowDisplaySettingsDialog();
         }
@@ -297,8 +329,8 @@ namespace Fizzi.Applications.Splitter.ViewModel
         {
             IsResizing = false;
 
-            DisplaySettingsViewModel.SelectedDisplayTemplate.WindowHeight = resizeStartHeight;
-            DisplaySettingsViewModel.SelectedDisplayTemplate.WindowWidth = resizeStartWidth;
+            MainWindow.ForceChangeWindowSize(DisplaySettingsViewModel.SelectedDisplayTemplate.WindowHeight,
+                    DisplaySettingsViewModel.SelectedDisplayTemplate.WindowWidth);
 
             MainWindow.ShowDisplaySettingsDialog();
         }

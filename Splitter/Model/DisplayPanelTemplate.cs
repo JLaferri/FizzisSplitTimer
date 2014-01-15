@@ -66,6 +66,20 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [ConfigurationProperty("TextColor", DefaultValue = "White")]
+        public string TextColor
+        {
+            get { return (string)this["TextColor"]; }
+            set
+            {
+                if (TextColor != value)
+                {
+                    this["TextColor"] = value;
+                    this.Raise("TextColor", PropertyChanged);
+                }
+            }
+        }
+
         public DisplayPanelTemplate()
         {
             BorderThickness = 2;
