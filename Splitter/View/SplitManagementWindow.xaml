@@ -1,0 +1,147 @@
+﻿<Window x:Class="Fizzi.Applications.Splitter.View.SplitManagementWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lview="clr-namespace:Fizzi.Applications.Splitter.View"
+        Title="SplitManagementWindow" Height="600" Width="700" UseLayoutRounding="True">
+    <Window.Resources>
+        <lview:TimeSpanConverter x:Key="TimeSpanConv" />
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <GroupBox Grid.Row="0" Margin="3" Header="Run Information">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                    
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" Text="Run Title" VerticalAlignment="Center" />
+                <TextBox Grid.Row="0" Grid.Column="1" Margin="3" Text="{Binding SplitManagementViewModel.RunTitle}" />
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" Text="Personal Best Date" VerticalAlignment="Center" />
+                <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding SplitManagementViewModel.PersonalBestDate}" IsEnabled="False" />
+            </Grid>
+        </GroupBox>
+        
+        <GroupBox Grid.Row="1" Margin="3" Header="Split Information">
+            <Grid Grid.IsSharedSizeScope="True">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                
+                <!-- Header "Row" -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition SharedSizeGroup="ButtonColumn" Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" Margin="3" Text="Split Name" VerticalAlignment="Center" TextAlignment="Center" />
+                    <TextBlock Grid.Column="1" Margin="3" Text="Personal Best Run" VerticalAlignment="Center" TextAlignment="Center" />
+                    <TextBlock Grid.Column="2" Margin="3" Text="Best Split Lengths" VerticalAlignment="Center" TextAlignment="Center" />
+                </Grid>
+
+                <!-- Split Rows -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Bottom" VerticalAlignment="Top" Orientation="Horizontal">
+                            <Button Margin="3" Command="{Binding SplitManagementViewModel.AddSplit}">
+                                <Button.Content>
+                                    <Image Source="/Splitter;component/AddTransparent.png" SnapsToDevicePixels="True" />
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                        
+                        <ItemsControl ItemsSource="{Binding SplitManagementViewModel.Splits}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition SharedSizeGroup="ButtonColumn" Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBox Grid.Column="0" Margin="3" VerticalAlignment="Center" Text="{Binding Name}" />
+                                        <DockPanel Grid.Column="1">
+                                            <CheckBox Margin="3" Content="??" VerticalAlignment="Center" IsChecked="{Binding IsPbTimeUnknown}" DockPanel.Dock="Right" />
+                                            <TextBox Margin="3" VerticalAlignment="Center">
+                                                <TextBox.Style>
+                                                    <Style TargetType="TextBox">
+                                                        <Setter Property="Text" Value="{Binding PersonalBestTimeAtSplit, Converter={StaticResource TimeSpanConv}, ValidatesOnExceptions=True}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsPbTimeUnknown}" Value="true">
+                                                                <Setter Property="IsEnabled" Value="false" />
+                                                                <Setter Property="Text" Value="[??]" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBox.Style>
+                                            </TextBox>
+                                        </DockPanel>
+                                        <DockPanel Grid.Column="2">
+                                            <CheckBox Margin="3" Content="??" VerticalAlignment="Center" IsChecked="{Binding IsGoldTimeUnknown}" DockPanel.Dock="Right" />
+                                            <TextBox Margin="3" VerticalAlignment="Center">
+                                                <TextBox.Style>
+                                                    <Style TargetType="TextBox">
+                                                        <Setter Property="Text" Value="{Binding GoldSplitLength, Converter={StaticResource TimeSpanConv}, ValidatesOnExceptions=True}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsGoldTimeUnknown}" Value="true">
+                                                                <Setter Property="IsEnabled" Value="false" />
+                                                                <Setter Property="Text" Value="[??]" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBox.Style>
+                                            </TextBox>
+                                        </DockPanel>
+                                        <StackPanel Grid.Column="3" Orientation="Horizontal">
+                                            <Button Margin="3" Command="{Binding Divide}">
+                                                <Button.Content>
+                                                    <Image Source="/Splitter;component/DivideTransparent.png" SnapsToDevicePixels="True" />
+                                                </Button.Content>
+                                            </Button>
+                                            <Button Margin="3" Command="{Binding Delete}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, 
+                                                                         Path=DataContext.SplitManagementViewModel.Splits.Count}" Value="1">
+                                                                <Setter Property="IsEnabled" Value="false" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                                <Button.Content>
+                                                    <Image Source="/Splitter;component/DeleteTransparent.png" SnapsToDevicePixels="True" />
+                                                </Button.Content>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </DockPanel>
+                </ScrollViewer>
+            </Grid>
+        </GroupBox>
+
+        <DockPanel Grid.Row="2">
+            <Button Margin="3" DockPanel.Dock="Left" Content="Save" Width="100" Click="SaveButton_Click" />
+            <Button Margin="3" DockPanel.Dock="Right" HorizontalAlignment="Right" Content="Cancel" Width="100" Click="CancelButton_Click" />
+        </DockPanel>
+    </Grid>
+</Window>

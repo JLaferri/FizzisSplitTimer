@@ -113,5 +113,23 @@ namespace Fizzi.Applications.Splitter.View
 
             mvm.SettingsWindowOpen = false;
         }
+
+        private void EditMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var mvm = (ViewModel.MainViewModel)DataContext;
+
+            mvm.SettingsWindowOpen = true;
+            mvm.PrepareSplitManagementWindow();
+
+            var window = new SplitManagementWindow()
+            {
+                DataContext = mvm,
+                Owner = this
+            };
+
+            window.ShowDialog();
+
+            mvm.SettingsWindowOpen = false;
+        }
     }
 }

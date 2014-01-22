@@ -44,7 +44,7 @@ namespace Fizzi.Applications.Splitter.Model
                 this.RaiseAndSetIfChanged("DisplayTemplate", ref _displayTemplate, value, PropertyChanged);
                 
                 DisplayTemplateId = value == null ? Guid.Empty : value.TemplateId;
-            } 
+            }
         }
 
         [DataMember(Name = "DisplayTemplateId")]
@@ -92,6 +92,12 @@ namespace Fizzi.Applications.Splitter.Model
         {
             PersonalBest = new Run(RunDefinition.Select(si => si.PersonalBestSplit).ToArray());
             SumOfBest = new Run(RunDefinition.Select(si => si.SumOfBestSplit).ToArray());
+        }
+
+        public void ChangeRunDefinition(SplitInfo[] runDefinition)
+        {
+            RunDefinition = runDefinition;
+            generateRunsFromDefinition();
         }
 
         public void Save()
@@ -151,6 +157,11 @@ namespace Fizzi.Applications.Splitter.Model
         {
             //Check if this run was better than personal best
             return latestRun.CompletedRunTime < PersonalBest.CompletedRunTime;
+        }
+
+        public static SplitFile CreateEmpty()
+        {
+            return new SplitFile("Unnamed File", Enumerable.Empty<SplitInfo>().ToArray());
         }
 
         public static SplitFile Load(string path)

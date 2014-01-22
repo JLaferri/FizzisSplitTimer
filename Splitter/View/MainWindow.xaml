@@ -5,7 +5,7 @@
         xmlns:lvm="clr-namespace:Fizzi.Applications.Splitter.ViewModel"
         xmlns:p="clr-namespace:Fizzi.Applications.Splitter.Properties"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        x:Name="MainWindowName"
+        x:Name="MainWindowName" Height="400" Width="250"
         WindowStyle="None" AllowsTransparency="{Binding Source={x:Static p:Settings.Default}, Path=AllowsTransparency, Mode=OneTime}"
         MouseDown="Window_MouseDown" Title="Fizzi's Split Timer">
     <Window.DataContext>
@@ -58,7 +58,23 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        
+
+        <Style x:Key="DisabledWhenNoFileOrRunStarted" TargetType="MenuItem" BasedOn="{StaticResource DisabledWhenNoFile}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsCurrentRunStarted}" Value="true">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DisabledWhenRunStarted" TargetType="MenuItem">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsCurrentRunStarted}" Value="true">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <BooleanToVisibilityConverter x:Key="BoolToVisConv" />
         <lview:ObjectEqualityConverter x:Key="ObjectEqualityConv" />
     </Window.Resources>
@@ -76,10 +92,13 @@
                             </Style.Triggers>
                         </Style>
                     </ContextMenu.Style>
+                    <MenuItem Header="New" Command="{Binding CreateNewFileCommand}" Style="{StaticResource DisabledWhenRunStarted}" />
                     <MenuItem Header="Open..." Command="{Binding OpenFileCommand}" />
                     <MenuItem Header="Import">
                         <MenuItem Header="WSplit" Command="{Binding ImportFromWsplitCommand}" />
                     </MenuItem>
+                    <Separator />
+                    <MenuItem Header="Edit Splits..." Style="{StaticResource DisabledWhenNoFileOrRunStarted}" Click="EditMenuItem_Click" />
                     <Separator />
                     <MenuItem Header="Save" Command="{Binding SaveSplits}" Style="{StaticResource DisabledWhenNoFile}" />
                     <MenuItem Header="Save As..." Command="{Binding SaveSplitsAs}" Style="{StaticResource DisabledWhenNoFile}" />
@@ -115,13 +134,13 @@
                 </StackPanel>
             </Border>
 
-            <lview:SplitViewer Grid.Row="1" Splits="{Binding SplitRows}" CurrentSplit="{Binding CurrentSplitRow}" IsHitTestVisible="False">
+            <lview:SplitViewer Grid.Row="1" Splits="{Binding SplitRows}" CurrentSplit="{Binding CurrentSplitRow}" IsHitTestVisible="False" Grid.IsSharedSizeScope="True">
                 <lview:SplitViewer.SplitTemplate>
                     <DataTemplate>
                         <Grid Margin="5,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="GoldSplitColumn" />
                             </Grid.ColumnDefinitions>
 
                             <Border Grid.Column="0" Margin="1">

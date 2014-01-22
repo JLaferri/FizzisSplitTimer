@@ -6,6 +6,7 @@ using System.ComponentModel;
 using Fizzi.Applications.Splitter.Common;
 using System.Reactive.Linq;
 using System.Globalization;
+using Fizzi.Applications.Splitter.Properties;
 
 namespace Fizzi.Applications.Splitter.Model
 {
@@ -66,27 +67,30 @@ namespace Fizzi.Applications.Splitter.Model
             OverrideTimeDisplay = null;
         }
 
-        public static string FormatElapsedTimeSpan(TimeSpan time)
+        public static string FormatElapsedTimeSpan(TimeSpan time) { return FormatElapsedTimeSpan(time, Settings.Default.MsDecimalCount); }
+        public static string FormatElapsedTimeSpan(TimeSpan time, int msDecimalCount)
         {
             int hours = (int)Math.Floor(time.TotalHours);
             int minutes = time.Minutes;
-            int seconds = time.Seconds;
-            int fractional = (int)(time.Milliseconds / 10);
 
             var ccDecimalSeparator = System.Globalization.NumberFormatInfo.CurrentInfo.NumberDecimalSeparator;
             var ccTimeSeparator = System.Globalization.DateTimeFormatInfo.CurrentInfo.TimeSeparator;
 
+            var sb = (new StringBuilder(@"{0:ss\")).Append(ccDecimalSeparator);
+            foreach (var _ in Enumerable.Range(0, msDecimalCount)) sb.Append("f");
+            sb.Append("}");
+            var secondsFormatter = sb.ToString();
+
             string timeString;
-            if (hours > 0) timeString = string.Format("{3}{5}{2:00}{5}{1:00}{4}{0:00}", fractional, seconds, minutes,
-                hours, ccDecimalSeparator, ccTimeSeparator);
-            else if (minutes > 0) timeString = string.Format("{2}{4}{1:00}{3}{0:00}", fractional, seconds, minutes,
-                ccDecimalSeparator, ccTimeSeparator);
-            else timeString = string.Format("{1}{2}{0:00}", fractional, seconds, ccDecimalSeparator);
+            if (hours > 0) timeString = string.Format("{2}:{1:00}:" + secondsFormatter, time, minutes, hours);
+            else if (minutes > 0) timeString = string.Format("{1}:" + secondsFormatter, time, minutes);
+            else timeString = string.Format(sb.Replace(":s", ":", 2, 2).ToString(), time);
 
             return timeString;
         }
 
-        public static string FormatTimeDifferential(TimeSpan time)
+        public static string FormatTimeDifferential(TimeSpan time) { return FormatTimeDifferential(time, Settings.Default.MsDecimalCount); }
+        public static string FormatTimeDifferential(TimeSpan time, int msDecimalCount)
         {
             bool isNegative = false;
             if (time < TimeSpan.Zero)
@@ -95,7 +99,7 @@ namespace Fizzi.Applications.Splitter.Model
                 time = time.Negate();
             }
 
-            var elapsedTimeString = FormatElapsedTimeSpan(time);
+            var elapsedTimeString = FormatElapsedTimeSpan(time, msDecimalCount);
             string signCharacter = isNegative ? NumberFormatInfo.CurrentInfo.NegativeSign : NumberFormatInfo.CurrentInfo.PositiveSign;
 
             return signCharacter + elapsedTimeString;

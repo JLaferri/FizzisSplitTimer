@@ -52,8 +52,10 @@ namespace Fizzi.Applications.Splitter.Model
         {
             Splits = splits.Select(sts => new Split(sts, this)).ToArray();
 
+            //By setting current split to the length of the amount of splits, this run is marked as completed
+            //The reason this constructor starts runs as completed immediately is that these runs are supposed to be
+            //runs to compare to such as the personal best or the sum-of-best run
             CurrentSplit = Splits.Length;
-
             IsStarted = true;
         }
 
