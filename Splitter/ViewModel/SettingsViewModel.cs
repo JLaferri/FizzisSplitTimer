@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Reactive.Linq;
 using System.ComponentModel;
 using Fizzi.Applications.Splitter.Properties;
+using BondTech.HotKeyManagement.WPF._4;
 
 namespace Fizzi.Applications.Splitter.ViewModel
 {
@@ -20,9 +21,9 @@ namespace Fizzi.Applications.Splitter.ViewModel
         public ICommand ChangeHotkey { get; private set; }
         public ICommand ClearHotkey { get; private set; }
 
-        private Dictionary<HotkeyAction, Key?> selectedKeyStorage = new Dictionary<HotkeyAction, Key?>();
+        private Dictionary<HotkeyAction, Keys?> selectedKeyStorage = new Dictionary<HotkeyAction, Keys?>();
 
-        public SettingsViewModel(KeyboardListener keyListener)
+        public SettingsViewModel(MainViewModel mvm)
         {
             KeyDisplayStrings = new Dictionary<HotkeyAction, Common.Notifiable<string>>();
 
@@ -32,15 +33,15 @@ namespace Fizzi.Applications.Splitter.ViewModel
             KeyDisplayStrings[HotkeyAction.Skip] = new Common.Notifiable<string>(Settings.Default.SkipKey == null ? "Unset" : Settings.Default.SkipKey.ToString());
             KeyDisplayStrings[HotkeyAction.Pause] = new Common.Notifiable<string>(Settings.Default.PauseKey == null ? "Unset" : Settings.Default.PauseKey.ToString());
 
-            var keyObservable = Observable.FromEventPattern<Common.RawKeyEventHandler, Common.RawKeyEventArgs>(
-                h => keyListener.KeyUp += h, h => keyListener.KeyUp -= h);
+            var keyPressedObs = Observable.FromEventPattern<KeyboardHookEventHandler, KeyboardHookEventArgs>(
+                    h => mvm.HotKeyManager.KeyBoardKeyEvent += h, h => mvm.HotKeyManager.KeyBoardKeyEvent -= h);
 
             ChangeHotkey = Command.Create<HotkeyAction>(_ => true, ha =>
             {
                 IsPendingHotkeyChange = true;
                 KeyDisplayStrings[ha].Value = "<< Press Key To Set Hotkey >>";
 
-                keyObservable.Take(1).LastAsync().Subscribe(key =>
+                keyPressedObs.Take(1).LastAsync().Subscribe(key =>
                 {
                     selectedKeyStorage[ha] = key.EventArgs.Key;
                     KeyDisplayStrings[ha].Value = key.EventArgs.Key.ToString();

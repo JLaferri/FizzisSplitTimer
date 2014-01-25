@@ -2,25 +2,22 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Fizzi.Applications.Splitter.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="SplitKey" Type="System.Nullable&lt;System.Windows.Input.Key&gt;" Scope="User">
+    <Setting Name="SplitKey" Type="System.Nullable&lt;BondTech.HotKeyManagement.WPF._4.Keys&gt;" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="UnsplitKey" Type="System.Nullable&lt;System.Windows.Input.Key&gt;" Scope="User">
+    <Setting Name="UnsplitKey" Type="System.Nullable&lt;BondTech.HotKeyManagement.WPF._4.Keys&gt;" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="SkipKey" Type="System.Nullable&lt;System.Windows.Input.Key&gt;" Scope="User">
+    <Setting Name="SkipKey" Type="System.Nullable&lt;BondTech.HotKeyManagement.WPF._4.Keys&gt;" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="ResetKey" Type="System.Nullable&lt;System.Windows.Input.Key&gt;" Scope="User">
+    <Setting Name="ResetKey" Type="System.Nullable&lt;BondTech.HotKeyManagement.WPF._4.Keys&gt;" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="PauseKey" Type="System.Nullable&lt;System.Windows.Input.Key&gt;" Scope="User">
+    <Setting Name="PauseKey" Type="System.Nullable&lt;BondTech.HotKeyManagement.WPF._4.Keys&gt;" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="IsNewVersion" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="IsVeryFirstLoad" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="AllowsTransparency" Type="System.Boolean" Scope="User">
@@ -31,6 +28,9 @@
     </Setting>
     <Setting Name="MsDecimalCount" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="HotkeyCooldownTime" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">200</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -9,6 +9,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer_x64", "Installer_
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer_x86", "Installer_x86\Installer_x86.vdproj", "{2A8BF1D9-3BB8-4045-A201-B811D0837151}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BondTech.HotKeyManagement.WPF.4", "BondTech.HotKeyManagement.WPF.4\BondTech.HotKeyManagement.WPF.4.csproj", "{C78F31C0-EC07-4194-90D4-9CB771AD41A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,18 @@ Global
 		{2A8BF1D9-3BB8-4045-A201-B811D0837151}.Release|Mixed Platforms.ActiveCfg = Release
 		{2A8BF1D9-3BB8-4045-A201-B811D0837151}.Release|x64.ActiveCfg = Release
 		{2A8BF1D9-3BB8-4045-A201-B811D0837151}.Release|x86.ActiveCfg = Release
+		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Release|x64.ActiveCfg = Release|Any CPU
+		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

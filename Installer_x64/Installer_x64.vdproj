@@ -28,7 +28,7 @@
         "Entry"
         {
         "MsmKey" = "8:_3F13BB5894CB0F1A95027BBAA8F31CCA"
-        "OwnerKey" = "8:_A2BCFFEF009347069188BF3183B04E59"
+        "OwnerKey" = "8:_4BA65924248DACC4BBAE7EC114C33DE8"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -40,7 +40,7 @@
         "Entry"
         {
         "MsmKey" = "8:_3F13BB5894CB0F1A95027BBAA8F31CCA"
-        "OwnerKey" = "8:_4BA65924248DACC4BBAE7EC114C33DE8"
+        "OwnerKey" = "8:_A2BCFFEF009347069188BF3183B04E59"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -82,13 +82,13 @@
         "Entry"
         {
         "MsmKey" = "8:_FC7FDB55B69C2085C79BBF16FE6F3CA7"
-        "OwnerKey" = "8:_589A431064561FB33E383BD77A5ABA33"
+        "OwnerKey" = "8:_4BA65924248DACC4BBAE7EC114C33DE8"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_FC7FDB55B69C2085C79BBF16FE6F3CA7"
-        "OwnerKey" = "8:_4BA65924248DACC4BBAE7EC114C33DE8"
+        "OwnerKey" = "8:_589A431064561FB33E383BD77A5ABA33"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -100,19 +100,7 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2E808B596DBAE5E0F6408B54029625DF"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_3F13BB5894CB0F1A95027BBAA8F31CCA"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_FC7FDB55B69C2085C79BBF16FE6F3CA7"
+        "OwnerKey" = "8:_4BA65924248DACC4BBAE7EC114C33DE8"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -124,7 +112,19 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_4BA65924248DACC4BBAE7EC114C33DE8"
+        "OwnerKey" = "8:_FC7FDB55B69C2085C79BBF16FE6F3CA7"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_3F13BB5894CB0F1A95027BBAA8F31CCA"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_2E808B596DBAE5E0F6408B54029625DF"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -172,7 +172,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\FizzisSplitTimer_x64_1_4_0.msi"
+        "OutputFilename" = "8:Release\\FizzisSplitTimer_x64_1_4_1.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -449,15 +449,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Fizzi's Split Timer"
-        "ProductCode" = "8:{CB2C45EE-A384-4D58-91BD-AE7B2EBCC474}"
-        "PackageCode" = "8:{3FEE0239-DE3B-41A5-9EE5-677C243DEABD}"
+        "ProductCode" = "8:{31B980A0-B289-437F-934D-6CFF754E5F40}"
+        "PackageCode" = "8:{53747104-39E2-4A96-AE37-0A3823DE7FD1}"
         "UpgradeCode" = "8:{12D95AED-3489-479A-8750-6CB69DBEC4C1}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.0.0"
+        "ProductVersion" = "8:1.4.1"
         "Manufacturer" = "8:Jas"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"

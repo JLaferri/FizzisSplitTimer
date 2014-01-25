@@ -13,6 +13,8 @@ using System.Windows;
 using Fizzi.Applications.Splitter.Properties;
 using System.Collections.ObjectModel;
 using System.Configuration;
+using BondTech.HotKeyManagement.WPF._4;
+using System.Xml.Linq;
 
 namespace Fizzi.Applications.Splitter.ViewModel
 {
@@ -64,9 +66,11 @@ namespace Fizzi.Applications.Splitter.ViewModel
         public DisplayTemplatesViewModel DisplaySettingsViewModel { get; private set; }
         public SplitManagementViewModel SplitManagementViewModel { get; private set; }
 
+        public HotKeyManager HotKeyManager { get; private set; }
+
         public View.MainWindow MainWindow { get; private set; }
 
-        private KeyboardListener keyListener = new KeyboardListener();
+        //private KeyboardListener keyListener = new KeyboardListener();
 
         public MainViewModel()
         {
@@ -80,67 +84,62 @@ namespace Fizzi.Applications.Splitter.ViewModel
                 //Attempt to upgrade display templates
                 if (!string.IsNullOrWhiteSpace(Settings.Default.ConfigPath))
                 {
-                    //Forcefully upgrade old DisplayTemplates by copying the old settings file over
+                    //Forcefully upgrade old DisplayTemplates by copying the old settings file xml node over
                     //I know that the Application Settings can be upgraded using the Upgrade method but I
                     //can't seem to find how to do the same with configuration sections
-                    System.IO.File.Copy(Settings.Default.ConfigPath, targetConfigPath, true);
-                    Settings.Default.Reload();
+                    var previousVersion = XDocument.Load(Settings.Default.ConfigPath);
+                    var newVersion = XDocument.Load(targetConfigPath);
+
+                    var previousDisplayTemplates = previousVersion.Descendants("displayTemplates").First();
+                    newVersion.Descendants("configuration").First().AddFirst(new XElement(previousDisplayTemplates));
+                    newVersion.Save(targetConfigPath);
                 }
 
                 Settings.Default.ConfigPath = targetConfigPath;
                 Settings.Default.IsNewVersion = false;
 
+                //REMOVE ME - THIS IS ONLY FOR VERSION 1.4.1 IN ORDER TO CLEAR PREVIOUS HOTKEYS
+                Settings.Default.SplitKey = null;
+                Settings.Default.UnsplitKey = null;
+                Settings.Default.SkipKey = null;
+                Settings.Default.ResetKey = null;
+                Settings.Default.PauseKey = null;
+
                 Settings.Default.Save();
             }
-
-            if (Settings.Default.IsVeryFirstLoad)
-            {
-                //Load Key defaults on first load ever
-                Settings.Default.SplitKey = Key.Right;
-                Settings.Default.UnsplitKey = Key.Left;
-                Settings.Default.SkipKey = Key.PageDown;
-                Settings.Default.ResetKey = Key.End;
-                Settings.Default.PauseKey = Key.Pause;
-
-                Settings.Default.IsVeryFirstLoad = false;
-                Settings.Default.Save();
-            }
-
-            //var splitList = new List<SplitInfo>();
-            //splitList.Add(new SplitInfo() { Name = "Cure 1", PersonalBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(106)), SumOfBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(103.61)) });
-            //splitList.Add(new SplitInfo() { Name = "Cure 2", PersonalBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(206.03 - 106)), SumOfBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(94.11)) });
-            //splitList.Add(new SplitInfo() { Name = "Cure 3", PersonalBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(411.09 - 206.03)), SumOfBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(178.83)) });
-            //splitList.Add(new SplitInfo() { Name = "Cure 4", PersonalBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(535.52 - 411.09)), SumOfBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(118.57)) });
-            //splitList.Add(new SplitInfo() { Name = "Cure 5", PersonalBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(654.04 - 535.52)), SumOfBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(117.34)) });
-            //splitList.Add(new SplitInfo() { Name = "Cure 6", PersonalBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(654.04 - 535.52)), SumOfBestSplit = new SplitTimeSpan(TimeSpan.FromSeconds(117.34)) });
-
-            //var splitFile = new SplitFile("Cure Time Monitoring", splitList.ToArray());
-
-            //splitFile.Path = @"C:\cure_time.fsp";
-            //splitFile.Save();
 
             LiveTimer = new Timer(30);
-            SettingsViewModel = new SettingsViewModel(keyListener);
+            SettingsViewModel = new SettingsViewModel(this);
             DisplaySettingsViewModel = new DisplayTemplatesViewModel(this);
             SplitManagementViewModel = new SplitManagementViewModel();
 
             ResizeEnabled = false;
             ShowGoldSplits = true;
-
-            //Subscribe to keyboard events
-            keyListener.KeyDown += (sender, e) =>
+            
+            MainWindow.Loaded += (sender, e) =>
             {
-                if (!SettingsWindowOpen && CurrentFile != null && CurrentRun != null)
+                //HotKeyManager must be initialized after the window has loaded
+                HotKeyManager = new HotKeyManager(MainWindow);
+                HotKeyManager.KeyBoardHook();
+
+                var keyPressedObs = Observable.FromEventPattern<KeyboardHookEventHandler, KeyboardHookEventArgs>(
+                    h => HotKeyManager.KeyBoardKeyEvent += h, h => HotKeyManager.KeyBoardKeyEvent -= h).Publish().RefCount();
+
+                TimeSpan cooldown = TimeSpan.FromMilliseconds(Settings.Default.HotkeyCooldownTime);
+
+                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.SplitKey).Cooldown(cooldown).Subscribe(_ => CurrentRun.Split());
+                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.UnsplitKey).Cooldown(cooldown).Subscribe(_ => CurrentRun.Unsplit());
+                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.SkipKey).Cooldown(cooldown).Subscribe(_ => CurrentRun.SkipSplit());
+                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.ResetKey).Cooldown(cooldown).Subscribe(_ =>
                 {
-                    if (e.Key == Settings.Default.SplitKey) CurrentRun.Split();
-                    if (e.Key == Settings.Default.UnsplitKey) CurrentRun.Unsplit();
-                    if (e.Key == Settings.Default.SkipKey) CurrentRun.SkipSplit();
-                    if (e.Key == Settings.Default.ResetKey)
+                    //This call to CheckMergeSuggested is done like this in order to free up the key pressed event immediately.
+                    //Blocking the event with a popup causes application responsiveness issues.
+                    Observable.Return(System.Reactive.Unit.Default).ObserveOnDispatcher().Subscribe(_2 =>
                     {
                         CheckMergeSuggested();
                         CurrentRun = new Run(CurrentFile.RunDefinition.Length);
-                    }
-                }
+                    });
+                });
             };
 
             CreateNewFileCommand = Command.Create(() => true, CreateNewFile);
@@ -449,7 +448,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
 
         public void Dispose()
         {
-            if (keyListener != null) keyListener.Dispose();
+            if (HotKeyManager != null) HotKeyManager.Dispose();
         }
     }
 }
