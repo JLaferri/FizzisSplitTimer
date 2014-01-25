@@ -15,7 +15,7 @@ namespace Fizzi.Applications.Splitter.Model
         public Split[] Splits { get; private set; }
 
         public bool IsStarted { get; private set; }
-        //public bool IsPaused { get { return PauseTime != null; } }
+        public bool IsPaused { get { return !stopwatch.IsRunning; } }
         public bool IsCompleted { get { return CurrentSplit >= Splits.Length; } }
 
         //public DateTime? PauseTime { get; private set; }
@@ -124,6 +124,16 @@ namespace Fizzi.Applications.Splitter.Model
 
                 OnSplitChanged(new SplitChange(SplitChange.ActionEnum.Removed, split, CurrentSplit));
                 if (wasRunPreviouslyComplete) OnRunStatusChanged();
+            }
+        }
+
+        public void Pause()
+        {
+            //Pausing is only valid if the run has already started and if it is not over
+            if (IsStarted && !IsCompleted)
+            {
+                if (!IsPaused) stopwatch.Stop();
+                else stopwatch.Start();
             }
         }
 

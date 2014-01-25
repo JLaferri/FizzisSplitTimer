@@ -227,13 +227,13 @@ namespace Fizzi.Applications.Splitter.Model
 
                 SplitTimeSpan pbSplit;
                     
-                if (split.PbTime == TimeSpan.Zero)
-                {
-                    var lastKnownTime = decodedStrings.Take(i).Where(a => a.PbTime != TimeSpan.Zero).Select(a => a.PbTime).FirstOrDefault();
-                    pbSplit = new SplitTimeSpan(lastKnownTime, false);
-                }
+                if (split.PbTime == TimeSpan.Zero) pbSplit = new SplitTimeSpan(TimeSpan.Zero, false);
                 else if (i == 0) pbSplit = new SplitTimeSpan(split.PbTime);
-                else pbSplit = new SplitTimeSpan(split.PbTime.Subtract(decodedStrings[i - 1].PbTime));
+                else
+                {
+                    var lastGoodTime = decodedStrings.Take(i).Where(a => a.PbTime != TimeSpan.Zero).Select(a => a.PbTime).LastOrDefault();
+                    pbSplit = new SplitTimeSpan(split.PbTime.Subtract(lastGoodTime));
+                }
 
                 return new SplitInfo()
                 {

@@ -53,14 +53,13 @@ namespace Fizzi.Applications.Splitter.ViewModel
 
                 SplitTimeSpan pbSplit;
 
-                if (split.IsPbTimeUnknown)
-                {
-                    //Default value for a timespan is zero. If the first entry was unknown it will be set to zero with IsPrecise = false
-                    var lastKnownTime = times.Take(i).Where(a => !a.IsPbTimeUnknown).Select(a => a.PersonalBestTimeAtSplit).FirstOrDefault();
-                    pbSplit = new SplitTimeSpan(lastKnownTime, false);
-                }
+                if (split.IsPbTimeUnknown) pbSplit = new SplitTimeSpan(TimeSpan.Zero, false);
                 else if (i == 0) pbSplit = new SplitTimeSpan(split.PersonalBestTimeAtSplit);
-                else pbSplit = new SplitTimeSpan(split.PersonalBestTimeAtSplit.Subtract(times[i - 1].PersonalBestTimeAtSplit));
+                else
+                {
+                    var lastGoodTime = times.Take(i).Where(a => !a.IsPbTimeUnknown).Select(a => a.PersonalBestTimeAtSplit).LastOrDefault();
+                    pbSplit = new SplitTimeSpan(split.PersonalBestTimeAtSplit.Subtract(lastGoodTime));
+                }
 
                 return new SplitInfo()
                 {

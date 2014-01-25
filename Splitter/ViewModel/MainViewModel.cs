@@ -18,7 +18,7 @@ using System.Xml.Linq;
 
 namespace Fizzi.Applications.Splitter.ViewModel
 {
-    class MainViewModel : INotifyPropertyChanged, IDisposable
+    class MainViewModel : INotifyPropertyChanged
     {
         public string Version { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
 
@@ -98,13 +98,6 @@ namespace Fizzi.Applications.Splitter.ViewModel
                 Settings.Default.ConfigPath = targetConfigPath;
                 Settings.Default.IsNewVersion = false;
 
-                //REMOVE ME - THIS IS ONLY FOR VERSION 1.4.1 IN ORDER TO CLEAR PREVIOUS HOTKEYS
-                Settings.Default.SplitKey = null;
-                Settings.Default.UnsplitKey = null;
-                Settings.Default.SkipKey = null;
-                Settings.Default.ResetKey = null;
-                Settings.Default.PauseKey = null;
-
                 Settings.Default.Save();
             }
 
@@ -130,6 +123,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
                 keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.SplitKey).Cooldown(cooldown).Subscribe(_ => CurrentRun.Split());
                 keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.UnsplitKey).Cooldown(cooldown).Subscribe(_ => CurrentRun.Unsplit());
                 keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.SkipKey).Cooldown(cooldown).Subscribe(_ => CurrentRun.SkipSplit());
+                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.PauseKey).Cooldown(cooldown).Subscribe(_ => CurrentRun.Pause());
                 keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.ResetKey).Cooldown(cooldown).Subscribe(_ =>
                 {
                     //This call to CheckMergeSuggested is done like this in order to free up the key pressed event immediately.
@@ -445,10 +439,5 @@ namespace Fizzi.Applications.Splitter.ViewModel
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public void Dispose()
-        {
-            if (HotKeyManager != null) HotKeyManager.Dispose();
-        }
     }
 }

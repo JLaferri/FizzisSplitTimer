@@ -31,6 +31,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -43,6 +44,7 @@
                             <TextBlock Grid.Column="0" Grid.Row="1" Margin="3" VerticalAlignment="Center" Text="Unsplit" />
                             <TextBlock Grid.Column="0" Grid.Row="2" Margin="3" VerticalAlignment="Center" Text="Skip Split" />
                             <TextBlock Grid.Column="0" Grid.Row="3" Margin="3" VerticalAlignment="Center" Text="Reset" />
+                            <TextBlock Grid.Column="0" Grid.Row="4" Margin="3" VerticalAlignment="Center" Text="Pause/Unpause" />
                             
                             <Border Grid.Column="1" Grid.Row="0" Margin="3" BorderBrush="Black" BorderThickness="1" SnapsToDevicePixels="True" Background="White">
                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -60,6 +62,10 @@
                                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
                                            Text="{Binding Path=SettingsViewModel.KeyDisplayStrings[(lvm:HotkeyAction)Reset].Value}" />
                             </Border>
+                            <Border Grid.Column="1" Grid.Row="4" Margin="3" BorderBrush="Black" BorderThickness="1" SnapsToDevicePixels="True" Background="White">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Text="{Binding Path=SettingsViewModel.KeyDisplayStrings[(lvm:HotkeyAction)Pause].Value}" />
+                            </Border>
 
                             <Button Grid.Column="2" Grid.Row="0" Margin="3" Content="Set"
                                     Command="{Binding SettingsViewModel.ChangeHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Split}" />
@@ -69,6 +75,8 @@
                                     Command="{Binding SettingsViewModel.ChangeHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Skip}" />
                             <Button Grid.Column="2" Grid.Row="3" Margin="3" Content="Set"
                                     Command="{Binding SettingsViewModel.ChangeHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Reset}" />
+                            <Button Grid.Column="2" Grid.Row="4" Margin="3" Content="Set"
+                                    Command="{Binding SettingsViewModel.ChangeHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Pause}" />
 
                             <Button Grid.Column="3" Grid.Row="0" Margin="3" Content="Clear"
                                     Command="{Binding SettingsViewModel.ClearHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Split}" />
@@ -78,6 +86,8 @@
                                     Command="{Binding SettingsViewModel.ClearHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Skip}" />
                             <Button Grid.Column="3" Grid.Row="3" Margin="3" Content="Clear"
                                     Command="{Binding SettingsViewModel.ClearHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Reset}" />
+                            <Button Grid.Column="3" Grid.Row="4" Margin="3" Content="Clear"
+                                    Command="{Binding SettingsViewModel.ClearHotkey}" CommandParameter="{x:Static lvm:HotkeyAction.Pause}" />
                         </Grid>
                     </GroupBox>
                     
