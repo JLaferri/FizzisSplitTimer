@@ -90,9 +90,13 @@ namespace Fizzi.Applications.Splitter.ViewModel
                     var previousVersion = XDocument.Load(Settings.Default.ConfigPath);
                     var newVersion = XDocument.Load(targetConfigPath);
 
-                    var previousDisplayTemplates = previousVersion.Descendants("displayTemplates").First();
-                    newVersion.Descendants("configuration").First().AddFirst(new XElement(previousDisplayTemplates));
-                    newVersion.Save(targetConfigPath);
+                    var previousDisplayTemplates = previousVersion.Descendants("displayTemplates").FirstOrDefault();
+
+                    if (previousDisplayTemplates != null)
+                    {
+                        newVersion.Descendants("configuration").First().AddFirst(new XElement(previousDisplayTemplates));
+                        newVersion.Save(targetConfigPath);
+                    }
                 }
 
                 Settings.Default.ConfigPath = targetConfigPath;
