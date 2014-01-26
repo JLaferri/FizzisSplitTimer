@@ -59,7 +59,7 @@
                         <StackPanel DockPanel.Dock="Bottom" VerticalAlignment="Top" Orientation="Horizontal">
                             <Button Margin="3" Command="{Binding SplitManagementViewModel.AddSplit}">
                                 <Button.Content>
-                                    <Image Source="/Splitter;component/AddTransparent.png" SnapsToDevicePixels="True" />
+                                    <Image Source="/BananaSplits;component/AddTransparent.png" SnapsToDevicePixels="True" />
                                 </Button.Content>
                             </Button>
                         </StackPanel>
@@ -111,7 +111,7 @@
                                         <StackPanel Grid.Column="3" Orientation="Horizontal">
                                             <Button Margin="3" Command="{Binding Divide}">
                                                 <Button.Content>
-                                                    <Image Source="/Splitter;component/DivideTransparent.png" SnapsToDevicePixels="True" />
+                                                    <Image Source="/BananaSplits;component/DivideTransparent.png" SnapsToDevicePixels="True" />
                                                 </Button.Content>
                                             </Button>
                                             <Button Margin="3" Command="{Binding Delete}">
@@ -126,7 +126,7 @@
                                                     </Style>
                                                 </Button.Style>
                                                 <Button.Content>
-                                                    <Image Source="/Splitter;component/DeleteTransparent.png" SnapsToDevicePixels="True" />
+                                                    <Image Source="/BananaSplits;component/DeleteTransparent.png" SnapsToDevicePixels="True" />
                                                 </Button.Content>
                                             </Button>
                                         </StackPanel>
