@@ -41,7 +41,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
                 IsPendingHotkeyChange = true;
                 KeyDisplayStrings[ha].Value = "<< Press Key To Set Hotkey >>";
 
-                keyPressedObs.Take(1).LastAsync().Subscribe(key =>
+                keyPressedObs.Take(1).LastAsync().SubscribeSafeLog(key =>
                 {
                     selectedKeyStorage[ha] = key.EventArgs.Key;
                     KeyDisplayStrings[ha].Value = key.EventArgs.Key.ToString();

@@ -116,19 +116,21 @@ namespace Fizzi.Applications.Splitter.ViewModel
                 HotKeyManager.KeyBoardHook();
 
                 var keyPressedObs = Observable.FromEventPattern<KeyboardHookEventHandler, KeyboardHookEventArgs>(
-                    h => HotKeyManager.KeyBoardKeyEvent += h, h => HotKeyManager.KeyBoardKeyEvent -= h).Publish().RefCount();
+                    h => HotKeyManager.KeyBoardKeyEvent += h, h => HotKeyManager.KeyBoardKeyEvent -= h)
+                    .Where(_ => !SettingsWindowOpen && CurrentFile != null && CurrentRun != null)
+                    .Publish().RefCount();
 
                 TimeSpan cooldown = TimeSpan.FromMilliseconds(Settings.Default.HotkeyCooldownTime);
 
-                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.SplitKey).Cooldown(cooldown).Subscribe(_ => CurrentRun.Split());
-                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.UnsplitKey).Cooldown(cooldown).Subscribe(_ => CurrentRun.Unsplit());
-                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.SkipKey).Cooldown(cooldown).Subscribe(_ => CurrentRun.SkipSplit());
-                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.PauseKey).Cooldown(cooldown).Subscribe(_ => CurrentRun.Pause());
-                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.ResetKey).Cooldown(cooldown).Subscribe(_ =>
+                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.SplitKey).Cooldown(cooldown).SubscribeSafeLog(_ => CurrentRun.Split());
+                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.UnsplitKey).Cooldown(cooldown).SubscribeSafeLog(_ => CurrentRun.Unsplit());
+                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.SkipKey).Cooldown(cooldown).SubscribeSafeLog(_ => CurrentRun.SkipSplit());
+                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.PauseKey).Cooldown(cooldown).SubscribeSafeLog(_ => CurrentRun.Pause());
+                keyPressedObs.Where(ep => ep.EventArgs.Key == Settings.Default.ResetKey).Cooldown(cooldown).SubscribeSafeLog(_ =>
                 {
                     //This call to CheckMergeSuggested is done like this in order to free up the key pressed event immediately.
                     //Blocking the event with a popup causes application responsiveness issues.
-                    Observable.Return(System.Reactive.Unit.Default).ObserveOnDispatcher().Subscribe(_2 =>
+                    Observable.Return(System.Reactive.Unit.Default).ObserveOnDispatcher().SubscribeSafeLog(_2 =>
                     {
                         CheckMergeSuggested();
                         CurrentRun = new Run(CurrentFile.RunDefinition.Length);
@@ -207,7 +209,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
             });
 
             //Monitor when run changes and changes state in order to control live timer
-            runStatusObs.Switch().Subscribe(_ =>
+            runStatusObs.Switch().SubscribeSafeLog(_ =>
             {
                 if (CurrentRun == null || !CurrentRun.IsStarted)
                 {
@@ -231,7 +233,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
             });
 
             //Monitor when run changes and a split is detected. This is used to update the split view
-            splitObs.Switch().Subscribe(args =>
+            splitObs.Switch().SubscribeSafeLog(args =>
             {
                 switch(args.EventArgs.Action)
                 {
@@ -260,13 +262,13 @@ namespace Fizzi.Applications.Splitter.ViewModel
             });
 
             //Change current run when a new file is loaded
-            fileChangedObs.Subscribe(_ =>
+            fileChangedObs.SubscribeSafeLog(_ =>
             {
                 CurrentRun = new Run(CurrentFile.RunDefinition.Length);
             });
 
             //Force window to resize correctly when a new template is loaded
-            windowSizeObs.Switch().Throttle(TimeSpan.FromMilliseconds(50)).ObserveOnDispatcher().Subscribe(_ =>
+            windowSizeObs.Switch().Throttle(TimeSpan.FromMilliseconds(50)).ObserveOnDispatcher().SubscribeSafeLog(_ =>
             {
                 if (DisplaySettingsViewModel == null || DisplaySettingsViewModel.SelectedDisplayTemplate == null) return;
 
@@ -275,7 +277,7 @@ namespace Fizzi.Applications.Splitter.ViewModel
             });
 
             //Keep DisplayTemplateViewModel synchronized with these changes.
-            fileDisplayTemplateObs.Switch().Subscribe(_ =>
+            fileDisplayTemplateObs.Switch().SubscribeSafeLog(_ =>
             {
                 if (CurrentFile == null || CurrentFile.DisplayTemplate == null) return;
                 
