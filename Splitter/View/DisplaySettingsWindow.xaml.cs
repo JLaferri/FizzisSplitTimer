@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using Fizzi.Applications.Splitter.ViewModel;
+using log4net;
 
 namespace Fizzi.Applications.Splitter.View
 {
@@ -20,6 +21,8 @@ namespace Fizzi.Applications.Splitter.View
     /// </summary>
     public partial class DisplaySettingsWindow : Window
     {
+        private static readonly ILog logger = LogManager.GetLogger(typeof(DisplaySettingsWindow));
+
         public DisplaySettingsWindow()
         {
             InitializeComponent();
@@ -29,9 +32,19 @@ namespace Fizzi.Applications.Splitter.View
         {
             var currentSelection = templateSelection.SelectedItem as IEditableObject;
 
-            if (currentSelection != null) currentSelection.EndEdit();
-
-            Close();
+            if (currentSelection != null)
+            {
+                try
+                {
+                    currentSelection.EndEdit();
+                    MessageBox.Show(this, "Template was successfully saved.", "Success", MessageBoxButton.OK);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error("Template saving failed.", ex);
+                    MessageBox.Show(this, "Template save failed - see log in My Documents for details.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

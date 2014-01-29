@@ -349,7 +349,7 @@
         
         <DockPanel Grid.Row="2">
             <Button Margin="3" DockPanel.Dock="Left" Content="Save" Width="100" Click="SaveButton_Click" />
-            <Button Margin="3" DockPanel.Dock="Right" HorizontalAlignment="Right" Content="Cancel" Width="100" Click="CancelButton_Click" />
+            <Button Margin="3" DockPanel.Dock="Right" HorizontalAlignment="Right" Content="Close" Width="100" Click="CancelButton_Click" />
         </DockPanel>
     </Grid>
 </Window>
