@@ -81,7 +81,9 @@ Global
 		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Release|x64.ActiveCfg = Release|Any CPU
+		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Release|x64.Build.0 = Release|Any CPU
 		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Release|x86.ActiveCfg = Release|Any CPU
+		{C78F31C0-EC07-4194-90D4-9CB771AD41A1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

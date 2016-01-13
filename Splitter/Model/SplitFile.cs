@@ -186,7 +186,7 @@ namespace Fizzi.Applications.Splitter.Model
                 templateFromSettings.TemplateName = file.Header + " Template";
 
                 PersistenceManager.Instance.DisplayTemplates.Add(templateFromSettings);
-                PersistenceManager.Instance.DisplayTemplatesConfiguration.Save();
+                PersistenceManager.Instance.Save();
 
                 file.DisplayTemplate = templateFromSettings;
 
@@ -249,6 +249,11 @@ namespace Fizzi.Applications.Splitter.Model
             //result.DisplaySettings.WindowWidth = width;
 
             return result;
+        }
+
+        public static SplitFile ImportFromLlanfair(string path)
+        {
+            throw new NotImplementedException();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

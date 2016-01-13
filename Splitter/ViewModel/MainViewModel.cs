@@ -337,6 +337,29 @@ namespace Fizzi.Applications.Splitter.ViewModel
             }
         }
 
+        public void ImportFromLlanfair()
+        {
+            var ofd = new Microsoft.Win32.OpenFileDialog()
+            {
+                Filter = "All files (*.*)|*.*",
+                RestoreDirectory = true,
+                Title = "Select Split File"
+            };
+
+            var result = ofd.ShowDialog(MainWindow);
+            if (result.HasValue && result.Value)
+            {
+                try
+                {
+                    CurrentFile = SplitFile.ImportFromLlanfair(ofd.FileName);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show(MainWindow, "Error importing splits from Llanfair. The file may be malformed.", "Error Importing", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
         public void CreateNewFile()
         {
             var emptySplit = new SplitInfo()

@@ -7,11 +7,14 @@ using System.ComponentModel;
 using System.Configuration;
 using Fizzi.Applications.Splitter.Common;
 using System.Windows.Media;
+using System.Runtime.Serialization;
 
 namespace Fizzi.Applications.Splitter.Model
 {
+    [DataContract]
     class DisplayTemplate : ConfigurationElement, INotifyPropertyChanged, IEditableObject
     {
+        [DataMember]
         [ConfigurationProperty("TemplateId", IsRequired = true, IsKey = true)]
         public Guid TemplateId
         {
@@ -19,6 +22,7 @@ namespace Fizzi.Applications.Splitter.Model
             set { this["TemplateId"] = value; }
         }
 
+        [DataMember]
         [ConfigurationProperty("TemplateName", DefaultValue = "Unnamed Display Template", IsRequired = true, IsKey = false)]
         public string TemplateName
         {
@@ -33,6 +37,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("WindowWidth", DefaultValue=250d, IsRequired = true, IsKey = false)]
         public double WindowWidth
         {
@@ -47,6 +52,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("WindowHeight", DefaultValue=400d, IsRequired = true, IsKey = false)]
         public double WindowHeight
         {
@@ -61,6 +67,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("MainFont", IsRequired = true, IsKey = false)]
         public FontDefinition MainFont
         {
@@ -75,6 +82,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("HeaderFont", IsRequired = true, IsKey = false)]
         public FontDefinition HeaderFont
         {
@@ -89,6 +97,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("TimerFont", IsRequired = true, IsKey = false)]
         public FontDefinition TimerFont
         {
@@ -103,6 +112,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("DefaultPanel", IsRequired = true, IsKey = false)]
         public DisplayPanelTemplate DefaultPanel
         {
@@ -117,6 +127,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("CurrentSplitPanel", IsRequired = true, IsKey = false)]
         public DisplayPanelTemplate CurrentSplitPanel
         {
@@ -131,6 +142,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("HeaderPanel", IsRequired = true, IsKey = false)]
         public DisplayPanelTemplate HeaderPanel
         {
@@ -145,6 +157,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("GoldPanel", IsRequired = true, IsKey = false)]
         public DisplayPanelTemplate GoldPanel
         {
@@ -159,6 +172,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("AheadPanel", IsRequired = true, IsKey = false)]
         public DisplayPanelTemplate AheadPanel
         {
@@ -173,6 +187,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("BehindPanel", IsRequired = true, IsKey = false)]
         public DisplayPanelTemplate BehindPanel
         {
@@ -187,6 +202,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("BackgroundColor", DefaultValue="Black")]
         public string BackgroundColor
         {
@@ -201,6 +217,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("TimerColor", DefaultValue = "White")]
         public string TimerColor
         {
@@ -412,7 +429,7 @@ namespace Fizzi.Applications.Splitter.Model
         public void EndEdit()
         {
             //Keep all changes that were made to the object and clear editing state
-            PersistenceManager.Instance.DisplayTemplatesConfiguration.Save();
+            PersistenceManager.Instance.Save();
 
             EditingBackup = null;
         }

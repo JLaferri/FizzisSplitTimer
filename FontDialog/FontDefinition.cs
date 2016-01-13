@@ -5,11 +5,14 @@ using System.Text;
 using System.Configuration;
 using System.ComponentModel;
 using Fizzi.Windows.FontDialog.Common;
+using System.Runtime.Serialization;
 
 namespace Fizzi.Windows.FontDialog
 {
+    [DataContract]
     public class FontDefinition : ConfigurationElement, INotifyPropertyChanged
     {
+        [DataMember]
         [ConfigurationProperty("Family", DefaultValue = "Calibri", IsRequired = true, IsKey = false)]
         public string Family
         {
@@ -24,6 +27,7 @@ namespace Fizzi.Windows.FontDialog
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("Size", DefaultValue = 14d, IsRequired = true, IsKey = false)]
         public double Size
         {

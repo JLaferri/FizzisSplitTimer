@@ -5,11 +5,14 @@ using System.Text;
 using System.Configuration;
 using System.ComponentModel;
 using Fizzi.Applications.Splitter.Common;
+using System.Runtime.Serialization;
 
 namespace Fizzi.Applications.Splitter.Model
 {
+    [DataContract]
     class DisplayPanelTemplate : ConfigurationElement, INotifyPropertyChanged
     {
+        [DataMember]
         [ConfigurationProperty("BorderCornerRadius", DefaultValue = 0d, IsRequired = true, IsKey = false)]
         public double BorderCornerRadius
         {
@@ -24,6 +27,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("BorderThickness", DefaultValue = 2d, IsRequired = true, IsKey = false)]
         public double BorderThickness
         {
@@ -38,6 +42,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("BackgroundColor", DefaultValue = "#303030")]
         public string BackgroundColor
         {
@@ -52,6 +57,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("BorderColor", DefaultValue = "White")]
         public string BorderColor
         {
@@ -66,6 +72,7 @@ namespace Fizzi.Applications.Splitter.Model
             }
         }
 
+        [DataMember]
         [ConfigurationProperty("TextColor", DefaultValue = "White")]
         public string TextColor
         {
@@ -84,6 +91,9 @@ namespace Fizzi.Applications.Splitter.Model
         {
             BorderThickness = 2;
             BorderCornerRadius = 0;
+            BackgroundColor = "#303030";
+            BorderColor = "White";
+            TextColor = "White";
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
